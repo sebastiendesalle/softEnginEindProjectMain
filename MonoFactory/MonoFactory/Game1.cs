@@ -52,7 +52,7 @@ namespace MonoFactory
             Texture2D grassTexture = Content.Load<Texture2D>("tile_grass");
 
             // init world
-            world = new WorldManager(20, 20); // 20x20 grid
+            world = new WorldManager(100, 100); // 20x20 grid
             world.GenerateWorld(grassTexture);
         }
 
@@ -65,7 +65,7 @@ namespace MonoFactory
             var inputReader = new KeyboardReader();
 
             // init hero
-            hero = new Hero(heroTexture, inputReader, new Vector2(300, 300), scale: 3f);
+            hero = new Hero(heroTexture, inputReader, new Vector2(900, 500), scale: 2f);
         }
 
         protected override void Update(GameTime gameTime)

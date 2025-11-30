@@ -22,7 +22,17 @@ namespace MonoFactory
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
-            spriteBatch.Draw(Texture, position, Color.White);
+            // set image at 64x64 pixels
+            int size = GridHelper.TileSize;
+
+            Rectangle destRect = new Rectangle(
+                (int)position.X,
+                (int)position.Y,
+                size,
+                size
+            );
+
+            spriteBatch.Draw(Texture, destRect, Color.White);
         }
     }
 }
