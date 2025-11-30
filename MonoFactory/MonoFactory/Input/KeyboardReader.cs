@@ -19,11 +19,13 @@ namespace MonoFactory.Input
             {
                 direction.X += 1;
             }
-
-            // jump movement
-            if (state.IsKeyDown(Keys.Space) || state.IsKeyDown(Keys.Up) || state.IsKeyDown(Keys.Z))
+            if (state.IsKeyDown(Keys.Z) || state.IsKeyDown(Keys.Up))
             {
-                direction.Y = 1;
+                direction.Y -= 1;
+            }
+            if (state.IsKeyDown(Keys.S) || state.IsKeyDown(Keys.Down))
+            {
+                direction.Y += 1;
             }
             return direction;
         }
