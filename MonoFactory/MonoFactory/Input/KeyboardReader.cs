@@ -10,7 +10,7 @@ namespace MonoFactory.Input
             KeyboardState state = Keyboard.GetState();
             Vector2 direction = Vector2.Zero;
 
-            // horizontal movement
+            // left / right
             if (state.IsKeyDown(Keys.Q) || state.IsKeyDown(Keys.Left))
             {
                 direction.X -= 1;
@@ -19,6 +19,8 @@ namespace MonoFactory.Input
             {
                 direction.X += 1;
             }
+
+            // up / down
             if (state.IsKeyDown(Keys.Z) || state.IsKeyDown(Keys.Up))
             {
                 direction.Y -= 1;

@@ -83,6 +83,7 @@ namespace MonoFactory
 
             spriteBatch.Begin(transformMatrix: _globalTransformation, samplerState: SamplerState.PointClamp);
 
+            world.Draw(spriteBatch);
             hero.Draw(spriteBatch);
 
             spriteBatch.End();
