@@ -52,33 +52,13 @@ namespace MonoFactory
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
             heroTexture = Content.Load<Texture2D>("GoblinKingSpriteSheet");
 
-            // create white pixel texture to draw walls
-            pixelTexture = new Texture2D(GraphicsDevice, 1, 1);
-            pixelTexture.SetData(new Color[] { Color.White });
-
-            // make and place obstacles
-            _obstacles = new List<Rectangle>();
-            _obstacles.Add(new Rectangle(0, 400, 800, 50));   // Main Floor
-            _obstacles.Add(new Rectangle(200, 300, 200, 30)); // Floating Platform
-            _obstacles.Add(new Rectangle(500, 200, 50, 200)); // Tall Wall
-
-            // input and bounds
+            // init input
             var inputReader = new KeyboardReader();
-            var viewport = GraphicsDevice.Viewport;
-            var playArea = new Rectangle(0, 0, targetWidth, targetHeight);
 
-            // create hero
-            hero = new Hero(
-                heroTexture,
-                inputReader,
-                _obstacles,
-                playArea,
-                new Vector2(50, 50), // Start Position
-                scale: 2f //hero scale
-            );
+            // init hero
+            hero = new Hero(heroTexture, inputReader, new Vector2(300, 300), scale: 3f);
         }
 
         protected override void Update(GameTime gameTime)
@@ -95,12 +75,6 @@ namespace MonoFactory
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin(transformMatrix: _globalTransformation, samplerState: SamplerState.PointClamp);
-
-            // draw the obstacles so they aren't inviz
-            foreach (var rect in _obstacles)
-            {
-                spriteBatch.Draw(pixelTexture, rect, Color.Black);
-            }
 
             hero.Draw(spriteBatch);
 
