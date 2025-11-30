@@ -15,6 +15,8 @@ namespace MonoFactory
         private PhysicsComponent physics;
         private float scale;
 
+        public Vector2 Position => physics.Position; // lets game1 read pos
+
         public Hero(Texture2D texture, IInputReader inputReader, Vector2 startPos, float scale = 5f)
         {
             this.texture = texture;

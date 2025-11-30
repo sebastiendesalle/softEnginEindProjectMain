@@ -15,6 +15,7 @@ namespace MonoFactory
         private Texture2D heroTexture;
         private Hero hero;
         private WorldManager world;
+        private Camera camera;
 
         // set target window size
         private const int targetWidth = 1920;
@@ -46,7 +47,7 @@ namespace MonoFactory
             float scaleX = (float)GraphicsDevice.Viewport.Width / targetWidth;
             float scaleY = (float)GraphicsDevice.Viewport.Height / targetHeight;
 
-            _globalTransformation = Matrix.CreateScale(scaleX, scaleX, 1.0f);
+            //_globalTransformation = Matrix.CreateScale(scaleX, scaleX, 1.0f);
 
             // load texture
             Texture2D grassTexture = Content.Load<Texture2D>("tile_grass");
@@ -54,6 +55,8 @@ namespace MonoFactory
             // init world
             world = new WorldManager(100, 100); // 20x20 grid
             world.GenerateWorld(grassTexture);
+
+            camera = new Camera();
         }
 
         protected override void LoadContent()
@@ -74,6 +77,9 @@ namespace MonoFactory
                 Exit();
 
             hero.Update(gameTime);
+
+            // camera follows player
+            camera.Follow(hero.Position, targetWidth, targetHeight);
             base.Update(gameTime);
         }
 
@@ -81,7 +87,7 @@ namespace MonoFactory
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin(transformMatrix: _globalTransformation, samplerState: SamplerState.PointClamp);
+            spriteBatch.Begin(transformMatrix: camera.Transform, samplerState: SamplerState.PointClamp);
 
             world.Draw(spriteBatch);
             hero.Draw(spriteBatch);
