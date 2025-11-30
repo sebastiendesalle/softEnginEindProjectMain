@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MonoFactory
 {
-    public class Tile // flyweight pattern
+    public class Tile // flyweight pattern, makes 1 square on the map
     {
         public bool IsSolid { get; set; }
 

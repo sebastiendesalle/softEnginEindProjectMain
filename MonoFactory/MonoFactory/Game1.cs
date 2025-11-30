@@ -13,15 +13,15 @@ namespace MonoFactory
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private Texture2D heroTexture;
-        private Texture2D pixelTexture; // For debugging walls
         private Hero hero;
+        private WorldManager world;
 
         // set target window size
         private const int targetWidth = 1920;
         private const int targetHeight = 1080;
 
         private Matrix _globalTransformation;
-        private List<Rectangle> _obstacles;
+
 
         public Game1()
         {
@@ -47,6 +47,13 @@ namespace MonoFactory
             float scaleY = (float)GraphicsDevice.Viewport.Height / targetHeight;
 
             _globalTransformation = Matrix.CreateScale(scaleX, scaleX, 1.0f);
+
+            // load texture
+            Texture2D grassTexture = Content.Load<Texture2D>("tile_grass");
+
+            // init world
+            world = new WorldManager(20, 20); // 20x20 grid
+            world.GenerateWorld(grassTexture);
         }
 
         protected override void LoadContent()
