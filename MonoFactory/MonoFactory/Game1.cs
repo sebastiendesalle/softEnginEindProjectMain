@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoFactory;
-using MonoFactory.Input;
 using System.Collections.Generic;
 
 namespace MonoFactory
@@ -86,12 +85,23 @@ namespace MonoFactory
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin(transformMatrix: camera.Transform, samplerState: SamplerState.PointClamp);
+            // matrix to squish Y axis
+            Matrix tiltMatrix = Matrix.CreateScale(1.0f, 0.6f, 1.0f);
+
+            // combine camera and tilt
+            Matrix groundTransform = camera.Transform * tiltMatrix;
+
+            spriteBatch.Begin(transformMatrix: groundTransform, samplerState: SamplerState.PointClamp);
 
             world.Draw(spriteBatch, camera, GraphicsDevice);
-            hero.Draw(spriteBatch);
 
             spriteBatch.End();
+
+            spriteBatch.Begin(transformMatrix: camera.Transform, samplerState: SamplerState.PointClamp);
+
+            hero.Draw(spriteBatch);
+            spriteBatch.End();
+
             base.Draw(gameTime);
         }
     }
