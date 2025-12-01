@@ -1,45 +1,80 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
 
 namespace MonoFactory
 {
     public class WorldManager
     {
-        private Tile[,] grid;
-        private int width, height;
 
-        public WorldManager(int width, int height)
+        // store machines etc..
+        private Dictionary<Point, Tile> grid = new Dictionary<Point, Tile>();
+
+
+        // store grass texture
+        private Texture2D grassTexture;
+        
+        public WorldManager(Texture2D grassTexture)
         {
-            this.width = width;
-            this.height = height;
-            grid = new Tile[width, height];
+            this.grassTexture = grassTexture;
         }
 
-        // generate map, factory pattern
-        public void GenerateWorld(Texture2D grassTexture)
+        public void AddBuilding(Point coordinate, Tile tile)
         {
-            for (int x = 0; x < width; x++)
+            if (!grid.ContainsKey(coordinate))
             {
-                for (int y = 0; y < height; y++)
+                grid.Add(coordinate, tile);
+            }
+        }
+
+        public void Draw(SpriteBatch spriteBatch, Camera camera, GraphicsDevice graphics)
+        {
+            // calc visible world area
+            Matrix inverseView = Matrix.Invert(camera.Transform);
+
+            Vector2 topLeft = Vector2.Transform(Vector2.Zero, inverseView);
+            Vector2 bottomRight = Vector2.Transform(new Vector2(graphics.Viewport.Width, graphics.Viewport.Height), inverseView);
+
+            // convert screen pixels to grid coords
+
+            // todo: fix convertion error
+            Point minGrid = GridHelper.WorldToGrid(topLeft);
+            Point maxGrid = GridHelper.WorldToGrid(bottomRight);
+
+            // tile buffer (fix flickering)
+            minGrid.X -= 1; minGrid.Y -= 1;
+            maxGrid.X += 1; maxGrid.Y += 1;
+
+            for (int x = minGrid.X; x <= maxGrid.X; x++)
+            {
+                for (int y = minGrid.Y; y <= maxGrid.Y; y++)
                 {
-                    // Create a simple grass tile everywhere
-                    grid[x, y] = new Tile(grassTexture, false);
+                    Vector2 position = GridHelper.GridToWorld(x, y);
+                    Point coordinate = new Point(x, y);
+
+                    DrawGrass(spriteBatch, position);
+
+                    // check for machine, draw ontop of grid
+                    if (grid.ContainsKey(coordinate))
+                    {
+                        grid[coordinate].Draw(spriteBatch, position);
+                    }
                 }
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        private void DrawGrass(SpriteBatch spriteBatch, Vector2 position)
         {
+            int size = GridHelper.TileSize;
 
-            // loop to draw all tiles
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    Vector2 worldPos = GridHelper.GridToWorld(x, y);
-                    grid[x, y].Draw(spriteBatch, worldPos);
-                }
-            }
+            // destination
+            Rectangle destRect = new Rectangle((int)position.X, (int)position.Y, size, size);
+
+            // source
+            Rectangle sourceRect = new Rectangle(0, 0, size, size);
+
+            spriteBatch.Draw(grassTexture, destRect, sourceRect, Color.White);
         }
     }
 }
