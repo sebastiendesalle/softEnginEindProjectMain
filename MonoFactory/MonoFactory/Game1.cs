@@ -53,8 +53,7 @@ namespace MonoFactory
             Texture2D grassTexture = Content.Load<Texture2D>("tile_grass");
 
             // init world
-            world = new WorldManager(100, 100); // 20x20 grid
-            world.GenerateWorld(grassTexture);
+            world = new WorldManager(grassTexture);
 
             camera = new Camera();
         }
@@ -89,7 +88,7 @@ namespace MonoFactory
 
             spriteBatch.Begin(transformMatrix: camera.Transform, samplerState: SamplerState.PointClamp);
 
-            world.Draw(spriteBatch);
+            world.Draw(spriteBatch, camera, GraphicsDevice);
             hero.Draw(spriteBatch);
 
             spriteBatch.End();
