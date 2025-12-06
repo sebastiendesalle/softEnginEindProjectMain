@@ -28,7 +28,9 @@ namespace MonoFactory
         {
             Color c = _isOpen ? Color.Gray : Color.White;
 
-            spriteBatch.Draw(_texture, Position, c);
+            Rectangle sourceRect = new Rectangle(0, 0, 64, 64);
+
+            spriteBatch.Draw(_texture, Position, sourceRect, c);
         }
     }
 }

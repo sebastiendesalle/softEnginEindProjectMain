@@ -15,6 +15,8 @@ namespace MonoFactory
         private Hero hero;
         private WorldManager world;
         private Camera camera;
+        private KeyboardState _prevKeyState;
+        private Texture2D pixelTexture;
 
         // set target window size
         private const int targetWidth = 1920;
@@ -46,8 +48,6 @@ namespace MonoFactory
             float scaleX = (float)GraphicsDevice.Viewport.Width / targetWidth;
             float scaleY = (float)GraphicsDevice.Viewport.Height / targetHeight;
 
-            //_globalTransformation = Matrix.CreateScale(scaleX, scaleX, 1.0f);
-
             // load texture
             Texture2D grassTexture = Content.Load<Texture2D>("tile_grass");
 
@@ -55,12 +55,18 @@ namespace MonoFactory
             world = new WorldManager(grassTexture);
 
             camera = new Camera();
+
+            Texture2D chestTex = Content.Load<Texture2D>("GoblinKingSpriteSheet");
+            world.AddMachine(new Chest(chestTex, new Vector2(400, 400)));
         }
 
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             heroTexture = Content.Load<Texture2D>("GoblinKingSpriteSheet");
+
+            pixelTexture = new Texture2D(GraphicsDevice, 1, 1);
+            pixelTexture.SetData(new Color[] { Color.White });
 
             // init input
             var inputReader = new KeyboardReader();
@@ -78,6 +84,20 @@ namespace MonoFactory
 
             // camera follows player
             camera.Follow(hero.Position, targetWidth, targetHeight);
+
+            KeyboardState state = Keyboard.GetState();
+
+            if (state.IsKeyDown(Keys.E) && !_prevKeyState.IsKeyDown(Keys.E))
+            {
+                IInteractable machine = world.GetNearestMachine(hero.Position, 100f);
+
+                if (machine != null)
+                {
+                    machine.Interact(hero);
+                }
+            }
+
+            _prevKeyState = state;
             base.Update(gameTime);
         }
 
@@ -95,11 +115,17 @@ namespace MonoFactory
 
             world.Draw(spriteBatch, camera, GraphicsDevice);
 
-            spriteBatch.End();
-
-            spriteBatch.Begin(transformMatrix: camera.Transform, samplerState: SamplerState.PointClamp);
+            world.DrawMachines(spriteBatch);
 
             hero.Draw(spriteBatch);
+
+            IInteractable nearby = world.GetNearestMachine(hero.Position, 100f);
+
+            if (nearby != null)
+            {
+                Vector2 promptPos = nearby.Position - new Vector2(0, 50);
+                spriteBatch.Draw(pixelTexture, new Rectangle((int)promptPos.X, (int)promptPos.Y, 20, 20), Color.Yellow);
+            }
             spriteBatch.End();
 
             base.Draw(gameTime);

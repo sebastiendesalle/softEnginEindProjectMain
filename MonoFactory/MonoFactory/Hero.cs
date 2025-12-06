@@ -1,8 +1,6 @@
-﻿using MonoFactory;
-using MonoFactory.Input;
+﻿using MonoFactory.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
 
 namespace MonoFactory
@@ -10,12 +8,22 @@ namespace MonoFactory
     public class Hero : IGameObject
     {
         private Texture2D texture;
-        private Animation animation;
+
+        // Animation System
+        private Dictionary<string, Animation> animations;
+        private Animation currentAnimation;
+
         private IInputReader inputReader;
         private PhysicsComponent physics;
         private float scale;
 
-        public Vector2 Position => physics.Position; // lets game1 read pos
+        // Visual Offsets (For the 2.5D look)
+        private Vector2 drawOffset;
+        private SpriteEffects flipEffect = SpriteEffects.None;
+
+        // Public Properties
+        public InventoryComponent Inventory { get; private set; }
+        public Vector2 Position => physics.Position; // Expose position for Camera
 
         public Hero(Texture2D texture, IInputReader inputReader, Vector2 startPos, float scale = 5f)
         {
@@ -23,47 +31,110 @@ namespace MonoFactory
             this.inputReader = inputReader;
             this.scale = scale;
 
-            // Setup Animation (Using Walk Row for now)
-            animation = new Animation();
-            animation.AddFrame(new AnimationFrame(new Rectangle(0, 64, 64, 64)));
-            animation.AddFrame(new AnimationFrame(new Rectangle(64, 64, 64, 64)));
-            animation.AddFrame(new AnimationFrame(new Rectangle(128, 64, 64, 64)));
-            animation.AddFrame(new AnimationFrame(new Rectangle(192, 64, 64, 64)));
-            animation.AddFrame(new AnimationFrame(new Rectangle(256, 64, 64, 64)));
+            // --- 1. SETUP ANIMATIONS ---
+            animations = new Dictionary<string, Animation>();
 
+            // Idle (Row 1)
+            var idleAnim = new Animation();
+            idleAnim.AddFrame(new AnimationFrame(new Rectangle(0, 0, 64, 64)));
+            idleAnim.AddFrame(new AnimationFrame(new Rectangle(64, 0, 64, 64)));
+            idleAnim.AddFrame(new AnimationFrame(new Rectangle(128, 0, 64, 64)));
+            idleAnim.AddFrame(new AnimationFrame(new Rectangle(192, 0, 64, 64)));
+            animations.Add("Idle", idleAnim);
+
+            // Walk (Row 2)
+            var walkAnim = new Animation();
+            walkAnim.AddFrame(new AnimationFrame(new Rectangle(0, 64, 64, 64)));
+            walkAnim.AddFrame(new AnimationFrame(new Rectangle(64, 64, 64, 64)));
+            walkAnim.AddFrame(new AnimationFrame(new Rectangle(128, 64, 64, 64)));
+            walkAnim.AddFrame(new AnimationFrame(new Rectangle(192, 64, 64, 64)));
+            walkAnim.AddFrame(new AnimationFrame(new Rectangle(256, 64, 64, 64)));
+            walkAnim.AddFrame(new AnimationFrame(new Rectangle(320, 64, 64, 64)));
+            animations.Add("Walk", walkAnim);
+
+            // Jump (Rows 10 & 11 - Optional if you add jumping back later)
+            var jumpAnim = new Animation();
+            jumpAnim.IsLooping = false;
+            jumpAnim.AddFrame(new AnimationFrame(new Rectangle(0, 576, 64, 64)));
+            jumpAnim.AddFrame(new AnimationFrame(new Rectangle(64, 576, 64, 64)));
+            jumpAnim.AddFrame(new AnimationFrame(new Rectangle(0, 640, 64, 64)));
+            jumpAnim.AddFrame(new AnimationFrame(new Rectangle(64, 640, 64, 64)));
+            animations.Add("Jump", jumpAnim);
+
+            // Set Default
+            currentAnimation = animations["Idle"];
+
+            // --- 2. CALCULATE HITBOX & OFFSET ---
+            // This is where your errors were! We declare the variables here.
+
+            // Define a smaller physics box (so he fits on tiles)
+            float hitBoxWidth = 30 * scale;
+            float hitBoxHeight = 50 * scale;
+
+            // Get the source rectangle size
+            var src = currentAnimation.CurrentFrame.SourceRectangle;
+
+            // Calculate the offset to align his feet to the physics position
+            drawOffset = new Vector2(
+                (src.Width * scale - hitBoxWidth) / 2f,  // Center X
+                (src.Height * scale) - hitBoxHeight      // Align Bottom Y (Feet)
+            );
+
+            // --- 3. INIT COMPONENTS ---
             physics = new PhysicsComponent(startPos);
+            Inventory = new InventoryComponent(20);
         }
 
         public void Update(GameTime gameTime)
         {
-            var delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            var input = this.inputReader.ReadInput();
+            float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Vector2 input = inputReader.ReadInput();
 
+            // Update Physics
             physics.ApplyMovement(input, delta);
             physics.Update(delta);
 
+            // Update Animation State
+            UpdateAnimationState(input);
+            currentAnimation.Update(gameTime);
+        }
+
+        private void UpdateAnimationState(Vector2 input)
+        {
+            // Simple State Logic
             if (input != Vector2.Zero)
             {
-                animation.Update(gameTime);
+                currentAnimation = animations["Walk"];
             }
             else
             {
-                
+                currentAnimation = animations["Idle"];
             }
+
+            // Flip Logic
+            if (input.X > 0) flipEffect = SpriteEffects.None;
+            else if (input.X < 0) flipEffect = SpriteEffects.FlipHorizontally;
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            // We draw at the physics position
+            // 1. Apply Offset
+            Vector2 drawPosition = physics.Position - drawOffset;
+
+            // 2. Un-Squish Logic
+            // Since the world is scaled by 0.6 on Y, we scale the hero by (1 / 0.6) = ~1.66
+            // This makes him stand up tall on the slanted ground.
+            Vector2 drawScale = new Vector2(scale, scale / 0.6f);
+
             spriteBatch.Draw(
                 texture,
-                physics.Position,
-                animation.CurrentFrame.SourceRectangle,
+                drawPosition,
+                currentAnimation.CurrentFrame.SourceRectangle,
                 Color.White,
                 0f,
                 Vector2.Zero,
-                scale,
-                SpriteEffects.None,
+                drawScale, // Use the corrected scale
+                flipEffect,
                 0f
             );
         }

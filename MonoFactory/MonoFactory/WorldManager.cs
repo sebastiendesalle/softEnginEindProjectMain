@@ -103,5 +103,16 @@ namespace MonoFactory
 
             spriteBatch.Draw(grassTexture, destRect, sourceRect, Color.White);
         }
+
+        public void DrawMachines(SpriteBatch spriteBatch)
+        {
+            foreach (var item in _machines)
+            {
+                if (item is IGameObject drawable)
+                {
+                    drawable.Draw(spriteBatch);
+                }
+            }
+        }
     }
 }
