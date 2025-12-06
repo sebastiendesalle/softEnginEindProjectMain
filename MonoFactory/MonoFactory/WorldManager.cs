@@ -14,6 +14,8 @@ namespace MonoFactory
 
         // store grass texture
         private Texture2D grassTexture;
+
+        private List<IInteractable> _machines = new List<IInteractable>();
         
         public WorldManager(Texture2D grassTexture)
         {
@@ -26,6 +28,23 @@ namespace MonoFactory
             {
                 grid.Add(coordinate, tile);
             }
+        }
+
+        public void AddMachine(IInteractable machine)
+        {
+            _machines.Add(machine);
+        }
+
+        public IInteractable GetNearestMachine(Vector2 targetPos, float maxDistance)
+        {
+            foreach (var machine in _machines)
+            {
+                if (Vector2.Distance(targetPos, machine.Position) < maxDistance )
+                {
+                    return machine;
+                }
+            }
+            return null;
         }
 
         public void Draw(SpriteBatch spriteBatch, Camera camera, GraphicsDevice graphics)
@@ -60,6 +79,14 @@ namespace MonoFactory
                     {
                         grid[coordinate].Draw(spriteBatch, position);
                     }
+                }
+            }
+
+            foreach (var item in _machines)
+            {
+                if (item is IGameObject drawable)
+                {
+                    drawable.Draw(spriteBatch);
                 }
             }
         }

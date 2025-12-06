@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 
 namespace MonoFactory.Input
 {
-    internal interface IInputReader
+    public interface IInputReader
     {
         Vector2 ReadInput();
     }
