@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace MonoFactory
 {
-    internal class Hero : IGameObject
+    public class Hero : IGameObject
     {
         private Texture2D texture;
         private Animation animation;
