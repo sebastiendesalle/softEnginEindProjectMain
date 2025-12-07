@@ -57,7 +57,8 @@ namespace MonoFactory
             camera = new Camera();
 
             Texture2D chestTex = Content.Load<Texture2D>("GoblinKingSpriteSheet");
-            world.AddMachine(new Chest(chestTex, new Vector2(400, 400)));
+            Vector2 chestPos = GridHelper.GridToWorld(8, 8);
+            world.AddMachine(new Chest(chestTex, chestPos));
         }
 
         protected override void LoadContent()

@@ -62,8 +62,8 @@ namespace MonoFactory
             Point maxGrid = GridHelper.WorldToGrid(bottomRight);
 
             // tile buffer (fix flickering)
-            minGrid.X -= 1; minGrid.Y -= 15;
-            maxGrid.X += 1; maxGrid.Y += 15;
+            minGrid.X -= 1; minGrid.Y -= 20;
+            maxGrid.X += 1; maxGrid.Y += 20;
 
             for (int x = minGrid.X; x <= maxGrid.X; x++)
             {

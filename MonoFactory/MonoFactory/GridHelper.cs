@@ -10,7 +10,7 @@ namespace MonoFactory
     public static class GridHelper
     {
         // set tile size, 1 square = 64 px
-        public const int TileSize = 64;
+        public const int TileSize = 48;
 
 
         // convert grid coords to screen pixels

@@ -32,7 +32,9 @@ namespace MonoFactory
                 size
             );
 
-            spriteBatch.Draw(Texture, destRect, Color.White);
+            Rectangle sourceRect = new Rectangle(0, 0, size, size);
+
+            spriteBatch.Draw(Texture, destRect,sourceRect, Color.White);
         }
     }
 }
