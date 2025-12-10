@@ -58,7 +58,7 @@ namespace MonoFactory
 
             Texture2D chestTex = Content.Load<Texture2D>("GoblinKingSpriteSheet");
             Vector2 chestPos = GridHelper.GridToWorld(8, 8);
-            world.AddMachine(new Chest(chestTex, chestPos));
+            world.AddEntity(new Chest(chestTex, chestPos));
         }
 
         protected override void LoadContent()
@@ -78,25 +78,24 @@ namespace MonoFactory
 
         protected override void Update(GameTime gameTime)
         {
+            KeyboardState state = Keyboard.GetState();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            world.Update(gameTime);
             hero.Update(gameTime);
-
-            // camera follows player
-            camera.Follow(hero.Position, targetWidth, targetHeight);
-
-            KeyboardState state = Keyboard.GetState();
 
             if (state.IsKeyDown(Keys.E) && !_prevKeyState.IsKeyDown(Keys.E))
             {
-                IInteractable machine = world.GetNearestMachine(hero.Position, 100f);
-
+                IInteractable machine = world.GetNearestInteractable(hero.Position, 100f);
                 if (machine != null)
                 {
                     machine.Interact(hero);
                 }
             }
+
+            // camera follows player
+            camera.Follow(hero.Position, targetWidth, targetHeight);
 
             _prevKeyState = state;
             base.Update(gameTime);
@@ -116,11 +115,9 @@ namespace MonoFactory
 
             world.Draw(spriteBatch, camera, GraphicsDevice);
 
-            world.DrawMachines(spriteBatch);
-
             hero.Draw(spriteBatch);
 
-            IInteractable nearby = world.GetNearestMachine(hero.Position, 100f);
+            IInteractable nearby = world.GetNearestInteractable(hero.Position, 100f);
 
             if (nearby != null)
             {
