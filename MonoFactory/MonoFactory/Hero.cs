@@ -90,6 +90,10 @@ namespace MonoFactory
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
             Vector2 input = inputReader.ReadInput();
 
+            if (inputReader.ReadJump())
+            {
+                physics.Jump();
+            }
             // Update Physics
             physics.ApplyMovement(input, delta);
             physics.Update(delta);
@@ -119,7 +123,7 @@ namespace MonoFactory
         public void Draw(SpriteBatch spriteBatch)
         {
             // 1. Apply Offset
-            Vector2 drawPosition = physics.Position - drawOffset;
+            Vector2 drawPosition = new Vector2(physics.Position.X, physics.Position.Y - physics.Height) - drawOffset;
 
             // 2. Un-Squish Logic
             // Since the world is scaled by 0.6 on Y, we scale the hero by (1 / 0.6) = ~1.66
