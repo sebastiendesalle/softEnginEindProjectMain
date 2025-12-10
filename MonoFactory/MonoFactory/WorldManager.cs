@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace MonoFactory
 {
-    public class WorldManager
+    public class WorldManager // mediator pattern
     {
 
         // store machines etc..

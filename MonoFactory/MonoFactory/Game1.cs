@@ -24,6 +24,8 @@ namespace MonoFactory
 
         private Matrix _globalTransformation;
 
+        private EntityFactory _entityFactory;
+
 
         public Game1()
         {
@@ -64,6 +66,25 @@ namespace MonoFactory
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            // load textures for world
+            Texture2D grassTexture = Content.Load<Texture2D>("tile_grass");
+
+            // create world
+            world = new WorldManager(grassTexture);
+
+            // load rest
+            _entityFactory = new EntityFactory();
+            Texture2D goblinTex = Content.Load<Texture2D>("GoblinKingSpriteSheet");
+            _entityFactory.RegisterTexture("Goblin", goblinTex);
+            _entityFactory.RegisterTexture("Chest", goblinTex);
+
+            // create and add entities
+            IGameObject chest1 = _entityFactory.CreateEntity("Chest", new Vector2(200, 200));
+            IGameObject enemy1 = _entityFactory.CreateEntity("Goblin", new Vector2(400, 300));
+            world.AddEntity(chest1);
+            world.AddEntity(enemy1);
+
             heroTexture = Content.Load<Texture2D>("GoblinKingSpriteSheet");
 
             pixelTexture = new Texture2D(GraphicsDevice, 1, 1);

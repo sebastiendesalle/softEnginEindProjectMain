@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace MonoFactory
 {
-    public class EntityFactory
+    public class EntityFactory // factory pattern
     {
         // store textures
         private Dictionary<string, Texture2D> _textureLibrary;
