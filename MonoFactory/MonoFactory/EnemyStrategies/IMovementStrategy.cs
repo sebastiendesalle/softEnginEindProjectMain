@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace MonoFactory.Strategies
+namespace MonoFactory.EnemyStrategies
 {
     public interface IMovementStrategy
     {
