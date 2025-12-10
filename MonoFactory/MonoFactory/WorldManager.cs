@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoFactory
 {
@@ -11,11 +12,10 @@ namespace MonoFactory
         // store machines etc..
         private Dictionary<Point, Tile> grid = new Dictionary<Point, Tile>();
 
-
         // store grass texture
         private Texture2D grassTexture;
 
-        private List<IInteractable> _machines = new List<IInteractable>();
+        private List<IGameObject> _entities = new List<IGameObject>();
         
         public WorldManager(Texture2D grassTexture)
         {
@@ -30,21 +30,38 @@ namespace MonoFactory
             }
         }
 
-        public void AddMachine(IInteractable machine)
+        public void AddEntity(IGameObject entity)
         {
-            _machines.Add(machine);
+            _entities.Add(entity);
         }
 
-        public IInteractable GetNearestMachine(Vector2 targetPos, float maxDistance)
+        // help find Interactables from list
+        public IInteractable GetNearestInteractable(Vector2 targetPos, float maxDistance)
         {
-            foreach (var machine in _machines)
+            IInteractable nearest = null;
+            float minDistance = maxDistance;
+
+            foreach (var entity in _entities)
             {
-                if (Vector2.Distance(targetPos, machine.Position) < maxDistance )
+                if (entity is IInteractable interactable)
                 {
-                    return machine;
+                    float distance = Vector2.Distance(targetPos, interactable.Position);
+                    if (distance < minDistance)
+                    {
+                        minDistance = maxDistance;
+                        nearest = interactable;
+                    }
                 }
             }
-            return null;
+            return nearest;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            for (int i = _entities.Count - 1; i >= 0; i--)
+            {
+                _entities[i].Update(gameTime);
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch, Camera camera, GraphicsDevice graphics)
@@ -82,12 +99,9 @@ namespace MonoFactory
                 }
             }
 
-            foreach (var item in _machines)
+            foreach (var entity in _entities.OrderBy(e => e.Rectangle.Bottom))
             {
-                if (item is IGameObject drawable)
-                {
-                    drawable.Draw(spriteBatch);
-                }
+                entity.Draw(spriteBatch);
             }
         }
 
@@ -102,17 +116,6 @@ namespace MonoFactory
             Rectangle sourceRect = new Rectangle(0, 0, size, size);
 
             spriteBatch.Draw(grassTexture, destRect, sourceRect, Color.White);
-        }
-
-        public void DrawMachines(SpriteBatch spriteBatch)
-        {
-            foreach (var item in _machines)
-            {
-                if (item is IGameObject drawable)
-                {
-                    drawable.Draw(spriteBatch);
-                }
-            }
         }
     }
 }
