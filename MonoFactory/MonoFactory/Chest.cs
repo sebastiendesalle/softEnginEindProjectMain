@@ -7,6 +7,8 @@ namespace MonoFactory
     public class Chest: IGameObject, IInteractable
     {
         public Vector2 Position { get; private set; }
+        public Rectangle Rectangle => new Rectangle((int)Position.X, (int)Position.Y, 64, 64);
+
         private Texture2D _texture;
         private bool _isOpen = false;
 
