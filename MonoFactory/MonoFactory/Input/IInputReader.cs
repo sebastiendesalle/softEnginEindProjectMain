@@ -11,5 +11,6 @@ namespace MonoFactory.Input
     public interface IInputReader
     {
         Vector2 ReadInput();
+        bool ReadJump();
     }
 }

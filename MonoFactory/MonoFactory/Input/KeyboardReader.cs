@@ -31,5 +31,11 @@ namespace MonoFactory.Input
             }
             return direction;
         }
+
+        public bool ReadJump()
+        {
+            KeyboardState state = Keyboard.GetState();
+            return state.IsKeyDown(Keys.Space);
+        }
     }
 }
