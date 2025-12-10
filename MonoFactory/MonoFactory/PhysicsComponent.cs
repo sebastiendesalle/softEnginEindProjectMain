@@ -17,7 +17,7 @@ namespace MonoFactory
         public float VerticalVelocity { get; private set; } = 0f;
 
         private const float Gravity = 2000f; // pulls down
-        private const float JumpForce = -800f; // todo: test if needs invertion
+        private const float JumpForce = -800f;
 
         private float friction = 0.85f; // make movement feel good
         private float speed = 50f; // acceleration speed

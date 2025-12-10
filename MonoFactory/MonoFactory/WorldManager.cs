@@ -74,7 +74,6 @@ namespace MonoFactory
 
             // convert screen pixels to grid coords
 
-            // todo: fix convertion error
             Point minGrid = GridHelper.WorldToGrid(topLeft);
             Point maxGrid = GridHelper.WorldToGrid(bottomRight);
 

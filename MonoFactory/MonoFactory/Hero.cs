@@ -66,9 +66,6 @@ namespace MonoFactory
             // Set Default
             currentAnimation = animations["Idle"];
 
-            // --- 2. CALCULATE HITBOX & OFFSET ---
-            // This is where your errors were! We declare the variables here.
-
             // Define a smaller physics box (so he fits on tiles)
             float hitBoxWidth = 30 * scale;
             float hitBoxHeight = 50 * scale;
@@ -82,7 +79,7 @@ namespace MonoFactory
                 (src.Height * scale) - hitBoxHeight      // Align Bottom Y (Feet)
             );
 
-            // --- 3. INIT COMPONENTS ---
+            // initial components
             physics = new PhysicsComponent(startPos);
             Inventory = new InventoryComponent(20);
         }
@@ -124,12 +121,10 @@ namespace MonoFactory
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            // 1. Apply Offset
+            // Apply Offset
             Vector2 drawPosition = new Vector2(physics.Position.X, physics.Position.Y - physics.Height) - drawOffset;
 
-            // 2. Un-Squish Logic
-            // Since the world is scaled by 0.6 on Y, we scale the hero by (1 / 0.6) = ~1.66
-            // This makes him stand up tall on the slanted ground.
+            // make world unsquish
             Vector2 drawScale = new Vector2(scale, scale / 0.6f);
 
             spriteBatch.Draw(
