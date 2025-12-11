@@ -12,7 +12,7 @@ namespace MonoFactory
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
 
-        private Texture2D _mainSpriteSheet;
+        private Texture2D _heroTexture;
         private Texture2D _pixelTexture;
 
         private Hero hero;
@@ -59,9 +59,11 @@ namespace MonoFactory
 
             // load grass
             Texture2D grassTexture = Content.Load<Texture2D>("tile_grass");
+            //hero texture
+            _heroTexture = Content.Load<Texture2D>("GoblinKingSpriteSheet");
             // load textures for world
-            Texture2D enemyTexture = Content.Load<Texture2D>("GoblinKingSpriteSheet");
-            Texture2D chestTexture = Content.Load<Texture2D>("GoblinKingSpriteSheet"); // TODO: change to chest png
+            Texture2D enemyTexture = Content.Load<Texture2D>("Skeleton enemy");
+            Texture2D chestTexture = Content.Load<Texture2D>("chest"); // TODO: change to chest png
 
             // init world
             world = new WorldManager(grassTexture);
@@ -80,7 +82,7 @@ namespace MonoFactory
 
             // hero
             var inputReader = new KeyboardReader();
-            hero = new Hero(_mainSpriteSheet, inputReader, new Vector2(900, 500), scale: 2f);
+            hero = new Hero(_heroTexture, inputReader, new Vector2(900, 500), scale: 2f);
 
             // enemies
             IGameObject chaser = _entityFactory.CreateEntity("Goblin_Chaser", new Vector2(400, 400));
@@ -145,7 +147,7 @@ namespace MonoFactory
 
             IInteractable nearby = world.GetNearestInteractable(hero.Position, 100f);
 
-            if (nearby != null)
+            if (nearby != null && !(nearby is Enemy))
             {
                 Vector2 promptPos = nearby.Position - new Vector2(0, 50);
                 spriteBatch.Draw(_pixelTexture, new Rectangle((int)promptPos.X, (int)promptPos.Y, 20, 20), Color.Yellow);
