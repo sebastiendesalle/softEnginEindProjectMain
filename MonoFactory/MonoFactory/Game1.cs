@@ -95,6 +95,30 @@ namespace MonoFactory
 
             // init hero
             hero = new Hero(heroTexture, inputReader, new Vector2(900, 500), scale: 2f);
+
+            _entityFactory.RegisterTexture("Goblin", goblinTex);
+
+            _entityFactory.RegisterTexture("Goblin_Chaser", goblinTex);
+            _entityFactory.RegisterTexture("Goblin_Patrol", goblinTex);
+            _entityFactory.RegisterTexture("Goblin_Turret", goblinTex);
+
+            // spawn 3 strats
+            IGameObject chaser = _entityFactory.CreateEntity("Goblin_Chaser", new Vector2(400, 400));
+            IGameObject patroller = _entityFactory.CreateEntity("Goblin_Patrol", new Vector2(600, 200));
+            IGameObject turret = _entityFactory.CreateEntity("Goblin_Turret", new Vector2(800, 600));
+
+            world.AddEntity(chaser);
+            world.AddEntity(patroller);
+            world.AddEntity(turret);
+
+            if (chaser is Enemy e1)
+            {
+                e1.SetTarget(hero);
+            }
+            if (patroller is Enemy e2)
+            {
+                e2.SetTarget(hero);
+            }
         }
 
         protected override void Update(GameTime gameTime)
