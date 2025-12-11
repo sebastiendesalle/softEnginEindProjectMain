@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using MonoFactory.EnemyStrategies;
 
 namespace MonoFactory
 {
@@ -34,13 +35,17 @@ namespace MonoFactory
 
             switch (type)
             {
-                case "Goblin":
-                    return new Enemy(texture, position);
                 case "Chest":
                     return new Chest(texture, position);
-                // TODO: add machine
+                case "Goblin_Chaser":
+                    return new Enemy(texture, position, new ChaseStrategy());
+                case "Goblin_Patrol":
+                    Vector2 endPos = position + new Vector2(200, 0);
+                    return new Enemy(texture, position, new PatrolStrategy(position, endPos));
+                case "Goblin_Turret":
+                    return new Enemy(texture, position, new StationaryStrategy());
                 default:
-                    throw new Exception($"Entity type {type} is not in factory switch");
+                    return new Enemy(texture, position, new StationaryStrategy());
             }
         }
     }
