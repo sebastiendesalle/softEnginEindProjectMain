@@ -7,45 +7,60 @@ namespace MonoFactory
 {
     public class Enemy: IGameObject, IInteractable
     {
+        public Vector2 Position { get; private set; }
         private Texture2D _texture;
 
-        private Dictionary<string, Animation> animations;
-        private Animation currentAnimation;
 
-        private Vector2 drawOffset;
-        private SpriteEffects flipEffect = SpriteEffects.None;
 
-        public Vector2 Position { get; private set; }
+        private Dictionary<string, Animation> _animations;
+        private Animation _currentAnimation;
+        private Vector2 _previousPosition;
+        //private Vector2 drawOffset; remove perchance
+        private SpriteEffects _flipEffect = SpriteEffects.None;
+
+        
 
         private IMovementStrategy _movementStrategy;
         private Hero _targetHero;
-        private Rectangle _sourceRect = new Rectangle(0, 0, 64, 64);
+        //private Rectangle _sourceRect = new Rectangle(0, 0, 64, 64); remove perchance
 
-        public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy, float scale = 4f)
+        public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy)
         {
             _texture = texture;
             Position = startPosition;
+            _previousPosition = startPosition;
             _movementStrategy = strategy;
 
-            animations = new Dictionary<string, Animation>();
+            LoadAnimations();
+        }
 
-            var walkAnim = new Animation();
-            walkAnim.AddFrame(new AnimationFrame(new Rectangle(0, 192, 64, 64)));
-            walkAnim.AddFrame(new AnimationFrame(new Rectangle(64, 192, 64, 64)));
-            walkAnim.AddFrame(new AnimationFrame(new Rectangle(128, 192, 64, 64)));
-            walkAnim.AddFrame(new AnimationFrame(new Rectangle(192, 192, 64, 64)));
-            walkAnim.AddFrame(new AnimationFrame(new Rectangle(256, 192, 64, 64)));
-            walkAnim.AddFrame(new AnimationFrame(new Rectangle(320, 192, 64, 64)));
-            animations.Add("Walk", walkAnim);
+        public void LoadAnimations()
+        {
+            _animations = new Dictionary<string, Animation>();
 
-            currentAnimation = animations["Idle"]; // TODO: implement idle
+            var idleAnim = new Animation();
+            idleAnim.AddFrame(new AnimationFrame(new Rectangle(0, 256, 62, 62)));
+            idleAnim.AddFrame(new AnimationFrame(new Rectangle(62, 256, 62, 62)));
+            idleAnim.AddFrame(new AnimationFrame(new Rectangle(124, 256, 62, 62)));
+            idleAnim.AddFrame(new AnimationFrame(new Rectangle(186, 256, 62, 62)));
+            _animations.Add("Idle", idleAnim);
 
-            float hitBoxWidth = 30 * scale;
-            float hitBoxHeight = 50 * scale;
+            var runAnim = new Animation();
+            runAnim.AddFrame(new AnimationFrame(new Rectangle(0, 192, 63, 63)));
+            runAnim.AddFrame(new AnimationFrame(new Rectangle(63, 192, 63, 63)));
+            runAnim.AddFrame(new AnimationFrame(new Rectangle(126, 192, 63, 63)));
+            runAnim.AddFrame(new AnimationFrame(new Rectangle(189, 192, 63, 63)));
+            runAnim.AddFrame(new AnimationFrame(new Rectangle(252, 192, 63, 63)));
+            runAnim.AddFrame(new AnimationFrame(new Rectangle(315, 192, 63, 63)));
+            runAnim.AddFrame(new AnimationFrame(new Rectangle(378, 192, 63, 63)));
+            runAnim.AddFrame(new AnimationFrame(new Rectangle(441, 192, 63, 63)));
+            runAnim.AddFrame(new AnimationFrame(new Rectangle(504, 192, 63, 63)));
+            runAnim.AddFrame(new AnimationFrame(new Rectangle(567, 192, 63, 63)));
+            runAnim.AddFrame(new AnimationFrame(new Rectangle(630, 192, 63, 63)));
+            runAnim.AddFrame(new AnimationFrame(new Rectangle(693, 192, 63, 63)));
+            _animations.Add("Run", runAnim);
 
-            var src = currentAnimation.CurrentFrame.SourceRectangle;
-
-            drawOffset = new Vector2((src.Width * scale - hitBoxWidth) / 2f, (src.Height * scale) - hitBoxHeight);
+            _currentAnimation = _animations["Idle"];
         }
 
         public void SetTarget(Hero hero)
@@ -57,26 +72,50 @@ namespace MonoFactory
 
         public void Update(GameTime gameTime)
         {
+            Vector2 newPos = Position;
+
+            // move via strategy
             if (_movementStrategy != null)
             {
                 Vector2 targetPos = _targetHero != null ? _targetHero.Position : Position;
                 Position = _movementStrategy.Move(gameTime, Position, targetPos);
             }
 
-            currentAnimation.Update(gameTime);
-        }
-
-        private void UpdateAnimatioState(Vector2 input)
-        {
-            if (input != Vector2.Zero)
+            Vector2 movement = newPos - Position;
+            if (movement.Length() > 0.1f)
             {
-                currentAnimation = animations["Walk"];
+                _currentAnimation = _animations["Run"];
+
+                if (movement.X > 0)
+                {
+                    _flipEffect = SpriteEffects.None;
+                }
+                else if (movement.X < 0)
+                {
+                    _flipEffect = SpriteEffects.FlipHorizontally;
+                }
+                else
+                {
+                    _currentAnimation = _animations["Idle"];
+                }
             }
+
+            // update pos & animation
+            Position = newPos;
+            _currentAnimation.Update(gameTime);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, Position,_sourceRect, Color.White);
+            spriteBatch.Draw(_texture, 
+                Position,
+                _currentAnimation.CurrentFrame.SourceRectangle,
+                Color.White,
+                0f,
+                Vector2.Zero,
+                1.5f,
+                _flipEffect,
+                0f);
         }
 
         public void Interact(Hero hero)
