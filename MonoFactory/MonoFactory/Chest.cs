@@ -26,14 +26,15 @@ namespace MonoFactory
             _openAnimation = new Animation();
             _openAnimation.IsLooping = false;
 
-            _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 0, 16, 48)));
-            _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 48, 16, 16)));
-            _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 96, 16, 48)));
-            _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 144, 16, 48)));
-            _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 192, 16, 48)));
+            _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 0, 54, 48)));
+            _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 48, 54, 16)));
+            _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 96, 54, 48)));
+            _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 144, 54, 48)));
+
+            _closedFrame = new Rectangle(0, 0, 54, 48);
         }
 
-        public Rectangle Rectangle => new Rectangle((int)Position.X, (int)Position.Y, 32, 32);
+        public Rectangle Rectangle => new Rectangle((int)Position.X, (int)Position.Y, 54, 48);
         public void Interact(Hero hero)
         {
             _isOpen = !_isOpen;
@@ -63,7 +64,15 @@ namespace MonoFactory
 
             Rectangle sourceRect = new Rectangle(0, 0, 64, 64);
 
-            spriteBatch.Draw(_texture, Position, drawRect, Color.White, 0f, Vector2.Zero, 2.0f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(_texture,
+                Position,
+                drawRect,
+                Color.White,
+                0f,
+                Vector2.Zero,
+                3.0f,
+                SpriteEffects.None,
+                0f);
         }
     }
 }

@@ -39,25 +39,17 @@ namespace MonoFactory
             _animations = new Dictionary<string, Animation>();
 
             var idleAnim = new Animation();
-            idleAnim.AddFrame(new AnimationFrame(new Rectangle(0, 256, 62, 62)));
-            idleAnim.AddFrame(new AnimationFrame(new Rectangle(62, 256, 62, 62)));
-            idleAnim.AddFrame(new AnimationFrame(new Rectangle(124, 256, 62, 62)));
-            idleAnim.AddFrame(new AnimationFrame(new Rectangle(186, 256, 62, 62)));
+            for (int i = 0; i < 4; i++)
+            {
+                idleAnim.AddFrame(new AnimationFrame(new Rectangle(i * 64, 192, 64, 64)));
+            }
             _animations.Add("Idle", idleAnim);
 
             var runAnim = new Animation();
-            runAnim.AddFrame(new AnimationFrame(new Rectangle(0, 192, 63, 63)));
-            runAnim.AddFrame(new AnimationFrame(new Rectangle(63, 192, 63, 63)));
-            runAnim.AddFrame(new AnimationFrame(new Rectangle(126, 192, 63, 63)));
-            runAnim.AddFrame(new AnimationFrame(new Rectangle(189, 192, 63, 63)));
-            runAnim.AddFrame(new AnimationFrame(new Rectangle(252, 192, 63, 63)));
-            runAnim.AddFrame(new AnimationFrame(new Rectangle(315, 192, 63, 63)));
-            runAnim.AddFrame(new AnimationFrame(new Rectangle(378, 192, 63, 63)));
-            runAnim.AddFrame(new AnimationFrame(new Rectangle(441, 192, 63, 63)));
-            runAnim.AddFrame(new AnimationFrame(new Rectangle(504, 192, 63, 63)));
-            runAnim.AddFrame(new AnimationFrame(new Rectangle(567, 192, 63, 63)));
-            runAnim.AddFrame(new AnimationFrame(new Rectangle(630, 192, 63, 63)));
-            runAnim.AddFrame(new AnimationFrame(new Rectangle(693, 192, 63, 63)));
+            for (int i = 0; i < 12; i++)
+            {
+                runAnim.AddFrame(new AnimationFrame(new Rectangle(i * 64, 128, 64, 64)));
+            }
             _animations.Add("Run", runAnim);
 
             _currentAnimation = _animations["Idle"];
@@ -72,7 +64,7 @@ namespace MonoFactory
 
         public void Update(GameTime gameTime)
         {
-            Vector2 newPos = Position;
+            Vector2 previousPos = Position;
 
             // move via strategy
             if (_movementStrategy != null)
@@ -81,7 +73,7 @@ namespace MonoFactory
                 Position = _movementStrategy.Move(gameTime, Position, targetPos);
             }
 
-            Vector2 movement = newPos - Position;
+            Vector2 movement = Position - previousPos;
             if (movement.Length() > 0.1f)
             {
                 _currentAnimation = _animations["Run"];
@@ -94,14 +86,13 @@ namespace MonoFactory
                 {
                     _flipEffect = SpriteEffects.FlipHorizontally;
                 }
-                else
-                {
-                    _currentAnimation = _animations["Idle"];
-                }
+            }
+            else
+            {
+                _currentAnimation = _animations["Idle"];
             }
 
-            // update pos & animation
-            Position = newPos;
+            // update animation
             _currentAnimation.Update(gameTime);
         }
 
@@ -113,7 +104,7 @@ namespace MonoFactory
                 Color.White,
                 0f,
                 Vector2.Zero,
-                1.5f,
+                3f,
                 _flipEffect,
                 0f);
         }
