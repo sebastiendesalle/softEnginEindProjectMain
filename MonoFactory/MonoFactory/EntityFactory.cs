@@ -11,9 +11,14 @@ namespace MonoFactory
         // store textures
         private Dictionary<string, Texture2D> _textureLibrary;
 
+        private Dictionary<string, Func<Vector2, Texture2D, IGameObject>> _creators;
+
         public EntityFactory()
         {
             _textureLibrary = new Dictionary<string, Texture2D>();
+            _creators = new Dictionary<string, Func<Vector2, Texture2D, IGameObject>>();
+
+            InitializeDefaultCreators();
         }
 
         public void RegisterTexture(string key, Texture2D texture)
@@ -24,6 +29,21 @@ namespace MonoFactory
             }
         }
 
+        private void InitializeDefaultCreators() // OCP
+        {
+            _creators["Chest"] = (pos, tex) => new Chest(tex, pos);
+
+            _creators["Goblin_Chaser"] = (pos, tex) => new Enemy(tex, pos, new ChaseStrategy());
+
+            _creators["Goblin_Patrol"] = (pos, tex) =>
+            {
+                Vector2 endPos = pos + new Vector2(200, 0);
+                return new Enemy(tex, pos, new PatrolStrategy(pos, endPos));
+            };
+
+            _creators["Goblin_Turret"] = (pos, tex) => new Enemy(tex, pos, new StationaryStrategy());
+        }
+
         public IGameObject CreateEntity(string type, Vector2 position)
         {
             if (!_textureLibrary.ContainsKey(type))
@@ -31,22 +51,12 @@ namespace MonoFactory
                 throw new Exception($"Texture for {type} not found.");
             }
 
-            Texture2D texture = _textureLibrary[type];
-
-            switch (type)
+            if (!_creators.ContainsKey(type))
             {
-                case "Chest":
-                    return new Chest(texture, position);
-                case "Goblin_Chaser":
-                    return new Enemy(texture, position, new ChaseStrategy());
-                case "Goblin_Patrol":
-                    Vector2 endPos = position + new Vector2(200, 0);
-                    return new Enemy(texture, position, new PatrolStrategy(position, endPos));
-                case "Goblin_Turret":
-                    return new Enemy(texture, position, new StationaryStrategy());
-                default:
-                    return new Enemy(texture, position, new StationaryStrategy());
+                return new Enemy(_textureLibrary[type], position, new StationaryStrategy());
             }
+            Texture2D texture = _textureLibrary[type];
+            return _creators[type](position, texture);
         }
     }
 }
