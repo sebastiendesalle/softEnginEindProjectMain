@@ -14,7 +14,11 @@ namespace MonoFactory
         private Animation _currentAnimation;
         private bool _isOpen = false;
 
-        public Rectangle _closedFrame = new Rectangle(0,0, 16, 16);
+        private const int FrameWidth = 54;
+        private const int FrameHeight = 48;
+        private const float Scale = 3.0f;
+
+        public Rectangle _closedFrame;
 
 
         public Chest(Texture2D texture, Vector2 position)
@@ -31,10 +35,20 @@ namespace MonoFactory
             _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 96, 54, 48)));
             _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 144, 54, 48)));
 
-            _closedFrame = new Rectangle(0, 0, 54, 48);
+            _closedFrame = new Rectangle(0, 0, FrameWidth, FrameHeight);
         }
 
-        public Rectangle Rectangle => new Rectangle((int)Position.X, (int)Position.Y, 54, 48);
+        public Rectangle Rectangle => new Rectangle((int)Position.X, (int)Position.Y,(int)(FrameWidth * Scale), (int)(FrameHeight * Scale));
+
+        public Rectangle InteractionRectangle
+        {
+            get
+            {
+                Rectangle rect = Rectangle;
+                rect.Inflate(20, 20);
+                return rect;
+            }
+        }
         public void Interact(Hero hero)
         {
             _isOpen = !_isOpen;
@@ -60,9 +74,6 @@ namespace MonoFactory
             {
                 drawRect = _closedFrame;
             }
-                Color c = _isOpen ? Color.Gray : Color.White;
-
-            Rectangle sourceRect = new Rectangle(0, 0, 64, 64);
 
             spriteBatch.Draw(_texture,
                 Position,
@@ -70,7 +81,7 @@ namespace MonoFactory
                 Color.White,
                 0f,
                 Vector2.Zero,
-                3.0f,
+                Scale,
                 SpriteEffects.None,
                 0f);
         }
