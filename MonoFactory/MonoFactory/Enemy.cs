@@ -22,7 +22,8 @@ namespace MonoFactory
 
         private IMovementStrategy _movementStrategy;
         private Hero _targetHero;
-        //private Rectangle _sourceRect = new Rectangle(0, 0, 64, 64); remove perchance
+        private const int FrameSize = 64;
+        private const float Scale = 3.0f;
 
         public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy)
         {
@@ -60,7 +61,7 @@ namespace MonoFactory
             _targetHero = hero;
         }
 
-        public Rectangle Rectangle => new Rectangle((int)Position.X, (int)Position.Y, _texture.Width, _texture.Height);
+        public Rectangle Rectangle => new Rectangle((int)Position.X, (int)Position.Y, (int)(FrameSize * Scale), (int)(FrameSize * Scale));
 
         public void Update(GameTime gameTime)
         {
@@ -104,7 +105,7 @@ namespace MonoFactory
                 Color.White,
                 0f,
                 Vector2.Zero,
-                3f,
+                Scale,
                 _flipEffect,
                 0f);
         }
