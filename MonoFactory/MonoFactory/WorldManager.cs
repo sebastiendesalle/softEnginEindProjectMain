@@ -35,6 +35,48 @@ namespace MonoFactory
             _entities.Add(entity);
         }
 
+        public bool IsCollision(Rectangle targetRect, IGameObject owner)
+        {
+            Point minGrid = GridHelper.WorldToGrid(new Vector2(targetRect.Left, targetRect.Top));
+            Point maxGrid = GridHelper.WorldToGrid(new Vector2(targetRect.Right, targetRect.Bottom));
+
+            for (int x = minGrid.X - 1; x <= maxGrid.X + 1; x++)
+            {
+                for (int y = minGrid.Y - 1; y <= maxGrid.Y + 1; y++)
+                {
+                    Point pt = new Point(x, y);
+                    if (grid.ContainsKey(pt))
+                    {
+                        Tile tile = grid[pt];
+
+                        Rectangle tileRect = new Rectangle(
+                            (int)(x * GridHelper.TileSize),
+                            (int)(y * GridHelper.TileSize),
+                            GridHelper.TileSize,
+                            GridHelper.TileSize);
+
+                        if (tile.IsSolid && tileRect.Intersects(targetRect))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            foreach (var entity in _entities)
+            {
+                if (entity == owner)
+                {
+                    continue;
+                }
+                if (entity.Rectangle.Intersects(targetRect))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
         // help find Interactables from list
         public IInteractable GetNearestInteractable(Vector2 targetPos, float maxDistance)
         {
@@ -48,7 +90,7 @@ namespace MonoFactory
                     float distance = Vector2.Distance(targetPos, interactable.Position);
                     if (distance < minDistance)
                     {
-                        minDistance = maxDistance;
+                        minDistance = distance;
                         nearest = interactable;
                     }
                 }

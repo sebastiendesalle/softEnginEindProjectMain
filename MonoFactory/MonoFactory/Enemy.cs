@@ -10,29 +10,37 @@ namespace MonoFactory
         public Vector2 Position { get; private set; }
         private Texture2D _texture;
 
-
+        private WorldManager _world;
 
         private Dictionary<string, Animation> _animations;
         private Animation _currentAnimation;
         private Vector2 _previousPosition;
-        //private Vector2 drawOffset; remove perchance
-        private SpriteEffects _flipEffect = SpriteEffects.None;
 
-        
+        private int _hitBoxWidth;
+        private int _hitBoxHeight;
+        private Vector2 _drawOffset;
+
+        private SpriteEffects _flipEffect = SpriteEffects.None;
 
         private IMovementStrategy _movementStrategy;
         private Hero _targetHero;
         private const int FrameSize = 64;
         private const float Scale = 3.0f;
 
-        public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy)
+        public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy, WorldManager world)
         {
             _texture = texture;
             Position = startPosition;
             _previousPosition = startPosition;
             _movementStrategy = strategy;
+            _world = world;
 
             LoadAnimations();
+
+            _hitBoxWidth = (int)(25 * Scale);
+            _hitBoxHeight = (int)(15 * Scale);
+
+            _drawOffset = new Vector2((FrameSize * Scale) / 2f, (FrameSize * Scale));
         }
 
         public void LoadAnimations()
@@ -61,17 +69,27 @@ namespace MonoFactory
             _targetHero = hero;
         }
 
-        public Rectangle Rectangle => new Rectangle((int)Position.X, (int)Position.Y, (int)(FrameSize * Scale), (int)(FrameSize * Scale));
+        public Rectangle Rectangle => new Rectangle((int)(Position.X - _hitBoxWidth / 2), (int)(Position.Y - _hitBoxHeight), _hitBoxWidth, _hitBoxHeight);
 
         public void Update(GameTime gameTime)
         {
             Vector2 previousPos = Position;
+
+            Vector2 desiredPosition = Position;
 
             // move via strategy
             if (_movementStrategy != null)
             {
                 Vector2 targetPos = _targetHero != null ? _targetHero.Position : Position;
                 Position = _movementStrategy.Move(gameTime, Position, targetPos);
+            }
+
+            Rectangle futureRect = new Rectangle((int)(desiredPosition.X - _hitBoxWidth / 2), (int)(desiredPosition.Y - _hitBoxHeight),
+                _hitBoxWidth, _hitBoxHeight);
+
+            if (!_world.IsCollision(futureRect, this))
+            {
+                Position = desiredPosition;
             }
 
             Vector2 movement = Position - previousPos;

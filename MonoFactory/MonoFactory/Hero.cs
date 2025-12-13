@@ -17,6 +17,8 @@ namespace MonoFactory
         private PhysicsComponent physics;
         private float scale;
 
+        private WorldManager _world;
+
         // Visual Offsets (For the 2.5D look)
         private Vector2 drawOffset;
         private SpriteEffects flipEffect = SpriteEffects.None;
@@ -30,13 +32,14 @@ namespace MonoFactory
 
         public Rectangle Rectangle => new Rectangle((int)(Position.X - _hitBoxWidth / 2), (int)(Position.Y - _hitBoxHeight), _hitBoxWidth, _hitBoxHeight);
 
-        public Hero(Texture2D texture, IInputReader inputReader, Vector2 startPos, float scale = 5f)
+        public Hero(Texture2D texture, IInputReader inputReader, Vector2 startPos, WorldManager world, float scale = 5f)
         {
             this.texture = texture;
             this.inputReader = inputReader;
             this.scale = scale;
+            this._world = world;
 
-            // --- 1. SETUP ANIMATIONS ---
+            // SETUP ANIMATIONS 
             animations = new Dictionary<string, Animation>();
 
             // Idle (Row 1)
@@ -70,16 +73,16 @@ namespace MonoFactory
             currentAnimation = animations["Idle"];
 
             // Define a smaller physics box (so he fits on tiles)
-            float hitBoxWidth = 30 * scale;
-            float hitBoxHeight = 50 * scale;
+            _hitBoxWidth = (int)(30 * scale);
+            _hitBoxHeight = (int)(50 * scale);
 
             // Get the source rectangle size
             var src = currentAnimation.CurrentFrame.SourceRectangle;
 
             // Calculate the offset to align his feet to the physics position
             drawOffset = new Vector2(
-                (src.Width * scale - hitBoxWidth) / 2f,  // Center X
-                (src.Height * scale) - hitBoxHeight      // Align Bottom Y (Feet)
+                (src.Width * scale - _hitBoxWidth) / 2f,  // Center X
+                (src.Height * scale) - _hitBoxHeight      // Align Bottom Y (Feet)
             );
 
             // initial components
@@ -98,6 +101,25 @@ namespace MonoFactory
             }
             // Update Physics
             physics.ApplyMovement(input, delta);
+
+            Vector2 velocityStep = physics.Velocity * delta;
+
+            Rectangle futureRectX = new Rectangle((int)(physics.Position.X + velocityStep.X - _hitBoxWidth / 2),
+                (int)(physics.Position.Y - _hitBoxHeight), _hitBoxWidth, _hitBoxHeight);
+
+            if (_world.IsCollision(futureRectX, this))
+            {
+                physics.Velocity.X = 0;
+            }
+
+            Rectangle futureRectY = new Rectangle((int)(physics.Position.X - _hitBoxWidth / 2),
+                (int)(physics.Position.Y + velocityStep.Y - _hitBoxHeight),
+                _hitBoxWidth, _hitBoxHeight);
+
+            if (_world.IsCollision(futureRectY, this))
+            {
+                physics.Velocity.Y = 0;
+            }
             physics.Update(delta);
 
             // Update Animation State

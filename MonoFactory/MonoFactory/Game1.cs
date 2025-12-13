@@ -20,6 +20,8 @@ namespace MonoFactory
         private Camera camera;
         private KeyboardState _prevKeyState;
 
+        private const float InteractionRadius = 200f;
+
         // set target window size
         private const int targetWidth = 1920;
         private const int targetHeight = 1080;
@@ -69,7 +71,7 @@ namespace MonoFactory
             world = new WorldManager(grassTexture);
 
             // setup factory
-            _entityFactory = new EntityFactory();
+            _entityFactory = new EntityFactory(world);
 
             _entityFactory.RegisterTexture("Chest", chestTexture);
             _entityFactory.RegisterTexture("Goblin_Chaser", enemyTexture);
@@ -78,11 +80,10 @@ namespace MonoFactory
 
             // chests
             world.AddEntity(_entityFactory.CreateEntity("Chest", GridHelper.GridToWorld(8, 8)));
-            //world.AddEntity(_entityFactory.CreateEntity("Chest", new Vector2(200, 200)));
 
             // hero
             var inputReader = new KeyboardReader();
-            hero = new Hero(_heroTexture, inputReader, new Vector2(900, 500), scale: 2f);
+            hero = new Hero(_heroTexture, inputReader, new Vector2(900, 500), world, scale: 2f);
 
             // enemies
             IGameObject chaser = _entityFactory.CreateEntity("Goblin_Chaser", new Vector2(400, 400));
@@ -118,7 +119,7 @@ namespace MonoFactory
 
             if (state.IsKeyDown(Keys.E) && !_prevKeyState.IsKeyDown(Keys.E))
             {
-                IInteractable machine = world.GetNearestInteractable(hero.Position, 100f);
+                IInteractable machine = world.GetNearestInteractable(hero.Position, InteractionRadius);
                 if (machine != null)
                 {
                     machine.Interact(hero);
@@ -145,7 +146,7 @@ namespace MonoFactory
 
             hero.Draw(spriteBatch);
 
-            IInteractable nearby = world.GetNearestInteractable(hero.Position, 100f);
+            IInteractable nearby = world.GetNearestInteractable(hero.Position, InteractionRadius);
 
             if (nearby != null && !(nearby is Enemy))
             {

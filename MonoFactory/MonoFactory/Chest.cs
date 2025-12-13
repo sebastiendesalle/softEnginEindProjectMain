@@ -18,7 +18,11 @@ namespace MonoFactory
         private const int FrameHeight = 48;
         private const float Scale = 3.0f;
 
-        public Rectangle _closedFrame;
+        private int _hitBoxWidth;
+        private int _hitBoxHeight;
+        private Vector2 _drawOffset;
+
+        public Rectangle _closedSourceRect;
 
 
         public Chest(Texture2D texture, Vector2 position)
@@ -35,17 +39,23 @@ namespace MonoFactory
             _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 96, 54, 48)));
             _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 144, 54, 48)));
 
-            _closedFrame = new Rectangle(0, 0, FrameWidth, FrameHeight);
+            _closedSourceRect = new Rectangle(0, 0, FrameWidth, FrameHeight);
+
+            _hitBoxWidth = (int)(FrameWidth * Scale * 0.8f);
+            _hitBoxHeight = (int)(20 * Scale);
+
+            _drawOffset = new Vector2((FrameWidth * Scale) / 2f, (FrameHeight * Scale));
         }
 
-        public Rectangle Rectangle => new Rectangle((int)Position.X, (int)Position.Y,(int)(FrameWidth * Scale), (int)(FrameHeight * Scale));
+        public Rectangle Rectangle => new Rectangle((int)(Position.X - _hitBoxWidth / 2),
+            (int)(Position.Y - _hitBoxHeight), _hitBoxWidth, _hitBoxHeight);
 
         public Rectangle InteractionRectangle
         {
             get
             {
                 Rectangle rect = Rectangle;
-                rect.Inflate(20, 20);
+                rect.Inflate(5, 10);
                 return rect;
             }
         }
@@ -72,11 +82,11 @@ namespace MonoFactory
             }
             else
             {
-                drawRect = _closedFrame;
+                drawRect = _closedSourceRect;
             }
 
             spriteBatch.Draw(_texture,
-                Position,
+                Position - _drawOffset,
                 drawRect,
                 Color.White,
                 0f,
