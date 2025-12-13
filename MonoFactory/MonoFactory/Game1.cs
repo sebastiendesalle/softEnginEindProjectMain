@@ -63,7 +63,7 @@ namespace MonoFactory
             _heroTexture = Content.Load<Texture2D>("GoblinKingSpriteSheet");
             // load textures for world
             Texture2D enemyTexture = Content.Load<Texture2D>("Skeleton enemy");
-            Texture2D chestTexture = Content.Load<Texture2D>("chest"); // TODO: change to chest png
+            Texture2D chestTexture = Content.Load<Texture2D>("chest");
 
             // init world
             world = new WorldManager(grassTexture);
