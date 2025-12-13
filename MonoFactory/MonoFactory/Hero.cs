@@ -25,7 +25,10 @@ namespace MonoFactory
         public InventoryComponent Inventory { get; private set; }
         public Vector2 Position => physics.Position; // Expose position for Camera
 
-        public Rectangle Rectangle => throw new System.NotImplementedException();
+        private int _hitBoxWidth;
+        private int _hitBoxHeight;
+
+        public Rectangle Rectangle => new Rectangle((int)(Position.X - _hitBoxWidth / 2), (int)(Position.Y - _hitBoxHeight), _hitBoxWidth, _hitBoxHeight);
 
         public Hero(Texture2D texture, IInputReader inputReader, Vector2 startPos, float scale = 5f)
         {
