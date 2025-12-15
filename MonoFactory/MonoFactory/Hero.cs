@@ -19,8 +19,6 @@ namespace MonoFactory
 
         private WorldManager _world;
 
-        // Visual Offsets (For the 2.5D look)
-        private Vector2 drawOffset;
         private SpriteEffects flipEffect = SpriteEffects.None;
 
         // Public Properties
@@ -78,12 +76,6 @@ namespace MonoFactory
 
             // Get the source rectangle size
             var src = currentAnimation.CurrentFrame.SourceRectangle;
-
-            // Calculate the offset to align his feet to the physics position
-            drawOffset = new Vector2(
-                (src.Width * scale - _hitBoxWidth) / 2f,  // Center X
-                (src.Height * scale) - _hitBoxHeight      // Align Bottom Y (Feet)
-            );
 
             // initial components
             physics = new PhysicsComponent(startPos);
@@ -147,7 +139,11 @@ namespace MonoFactory
         public void Draw(SpriteBatch spriteBatch)
         {
             // Apply Offset
-            Vector2 drawPosition = new Vector2(physics.Position.X, physics.Position.Y - physics.Height) - drawOffset;
+            Vector2 drawPosition = new Vector2(physics.Position.X, physics.Position.Y - physics.Height);
+
+            Rectangle src = currentAnimation.CurrentFrame.SourceRectangle;
+
+            Vector2 origin = new Vector2(src.Width / 2f, src.Height);
 
             // make world unsquish
             Vector2 drawScale = new Vector2(scale, scale / 0.6f);
@@ -155,10 +151,10 @@ namespace MonoFactory
             spriteBatch.Draw(
                 texture,
                 drawPosition,
-                currentAnimation.CurrentFrame.SourceRectangle,
+                src,
                 Color.White,
                 0f,
-                Vector2.Zero,
+                origin,
                 drawScale, // Use the corrected scale
                 flipEffect,
                 0f

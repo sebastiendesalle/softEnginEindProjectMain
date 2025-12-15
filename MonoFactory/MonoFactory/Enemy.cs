@@ -14,11 +14,9 @@ namespace MonoFactory
 
         private Dictionary<string, Animation> _animations;
         private Animation _currentAnimation;
-        private Vector2 _previousPosition;
 
         private int _hitBoxWidth;
         private int _hitBoxHeight;
-        private Vector2 _drawOffset;
 
         private SpriteEffects _flipEffect = SpriteEffects.None;
 
@@ -31,7 +29,6 @@ namespace MonoFactory
         {
             _texture = texture;
             Position = startPosition;
-            _previousPosition = startPosition;
             _movementStrategy = strategy;
             _world = world;
 
@@ -39,8 +36,6 @@ namespace MonoFactory
 
             _hitBoxWidth = (int)(25 * Scale);
             _hitBoxHeight = (int)(15 * Scale);
-
-            _drawOffset = new Vector2((FrameSize * Scale) / 2f, (FrameSize * Scale));
         }
 
         public void LoadAnimations()
@@ -117,12 +112,16 @@ namespace MonoFactory
 
         public void Draw(SpriteBatch spriteBatch)
         {
+
+            Rectangle src = _currentAnimation.CurrentFrame.SourceRectangle;
+
+            Vector2 origin = new Vector2(src.Width / 2f, src.Height);
             spriteBatch.Draw(_texture, 
                 Position,
-                _currentAnimation.CurrentFrame.SourceRectangle,
+                src,
                 Color.White,
                 0f,
-                Vector2.Zero,
+                origin,
                 Scale,
                 _flipEffect,
                 0f);

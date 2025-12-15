@@ -20,7 +20,6 @@ namespace MonoFactory
 
         private int _hitBoxWidth;
         private int _hitBoxHeight;
-        private Vector2 _drawOffset;
 
         public Rectangle _closedSourceRect;
 
@@ -43,8 +42,6 @@ namespace MonoFactory
 
             _hitBoxWidth = (int)(FrameWidth * Scale * 0.8f);
             _hitBoxHeight = (int)(20 * Scale);
-
-            _drawOffset = new Vector2((FrameWidth * Scale) / 2f, (FrameHeight * Scale));
         }
 
         public Rectangle Rectangle => new Rectangle((int)(Position.X - _hitBoxWidth / 2),
@@ -55,7 +52,7 @@ namespace MonoFactory
             get
             {
                 Rectangle rect = Rectangle;
-                rect.Inflate(5, 10);
+                rect.Inflate(20, 20);
                 return rect;
             }
         }
@@ -86,7 +83,7 @@ namespace MonoFactory
             }
 
             spriteBatch.Draw(_texture,
-                Position - _drawOffset,
+                Position,
                 drawRect,
                 Color.White,
                 0f,
