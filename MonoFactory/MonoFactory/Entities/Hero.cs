@@ -1,9 +1,13 @@
-﻿using MonoFactory.Input;
+﻿using MonoFactory.Inputs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using MonoFactory.Managers;
+using MonoFactory.Entities.Interfaces;
+using MonoFactory.Components.Animation;
+using MonoFactory.Components;
 
-namespace MonoFactory
+namespace MonoFactory.Entities
 {
     public class Hero : IGameObject
     {
@@ -35,7 +39,7 @@ namespace MonoFactory
             this.texture = texture;
             this.inputReader = inputReader;
             this.scale = scale;
-            this._world = world;
+            _world = world;
 
             // SETUP ANIMATIONS 
             animations = new Dictionary<string, Animation>();

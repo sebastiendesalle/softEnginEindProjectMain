@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace MonoFactory.Input
+namespace MonoFactory.Inputs
 {
     class KeyboardReader : IInputReader
     {

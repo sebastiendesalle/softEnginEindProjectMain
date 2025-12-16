@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoFactory
+namespace MonoFactory.Components
 {
     public class PhysicsComponent // handles movement and gravity and collisions
     {

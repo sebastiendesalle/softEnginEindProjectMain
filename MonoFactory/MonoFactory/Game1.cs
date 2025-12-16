@@ -1,9 +1,13 @@
-﻿using MonoFactory.Input;
+﻿using MonoFactory.Inputs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoFactory;
 using System.Collections.Generic;
+using MonoFactory.Core;
+using MonoFactory.Managers;
+using MonoFactory.Factories;
+using MonoFactory.Entities.Interfaces;
+using MonoFactory.Entities;
 
 namespace MonoFactory
 {

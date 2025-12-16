@@ -1,10 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoFactory.Core;
+using MonoFactory.Entities;
+using MonoFactory.Entities.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MonoFactory
+namespace MonoFactory.Managers
 {
     public class WorldManager // mediator pattern
     {
@@ -50,8 +53,8 @@ namespace MonoFactory
                         Tile tile = grid[pt];
 
                         Rectangle tileRect = new Rectangle(
-                            (int)(x * GridHelper.TileSize),
-                            (int)(y * GridHelper.TileSize),
+                            x * GridHelper.TileSize,
+                            y * GridHelper.TileSize,
                             GridHelper.TileSize,
                             GridHelper.TileSize);
 

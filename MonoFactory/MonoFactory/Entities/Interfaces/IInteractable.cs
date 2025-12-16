@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace MonoFactory
+namespace MonoFactory.Entities.Interfaces
 {
     public interface IInteractable
     {

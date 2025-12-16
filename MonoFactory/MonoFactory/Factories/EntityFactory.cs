@@ -2,9 +2,12 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using MonoFactory.EnemyStrategies;
+using MonoFactory.Strategies;
+using MonoFactory.Managers;
+using MonoFactory.Entities.Interfaces;
+using MonoFactory.Entities;
 
-namespace MonoFactory
+namespace MonoFactory.Factories
 {
     public class EntityFactory // factory pattern
     {

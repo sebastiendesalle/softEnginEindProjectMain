@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
-namespace MonoFactory.Input
+namespace MonoFactory.Inputs
 {
     public interface IInputReader
     {

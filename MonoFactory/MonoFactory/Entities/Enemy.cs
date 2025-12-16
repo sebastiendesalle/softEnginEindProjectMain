@@ -1,9 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoFactory.EnemyStrategies;
+using MonoFactory.Components.Animation;
+using MonoFactory.Strategies;
+using MonoFactory.Entities.Interfaces;
+using MonoFactory.Managers;
 using System.Collections.Generic;
 
-namespace MonoFactory
+namespace MonoFactory.Entities
 {
     public class Enemy: IGameObject, IInteractable
     {

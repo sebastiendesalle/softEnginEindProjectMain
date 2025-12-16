@@ -2,8 +2,10 @@
 using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics;
 using System.Collections.Generic;
+using MonoFactory.Entities.Interfaces;
+using MonoFactory.Components.Animation;
 
-namespace MonoFactory
+namespace MonoFactory.Entities
 {
     public class Chest: IGameObject, IInteractable
     {
