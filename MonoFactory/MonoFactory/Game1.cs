@@ -11,10 +11,22 @@ using MonoFactory.Entities;
 
 namespace MonoFactory
 {
+    public enum GameState
+    {
+        Menu,
+        Playing,
+        GameOver,
+        Victory
+    }
+
     public class Game1 : Game
     {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
+
+        private SpriteFont _gameFont;
+
+        private GameState _currentState;
 
         private Texture2D _heroTexture;
         private Texture2D _pixelTexture;
@@ -50,6 +62,7 @@ namespace MonoFactory
 
         protected override void Initialize()
         {
+            _currentState = GameState.Menu;
             base.Initialize();
 
             camera = new Camera();
@@ -59,6 +72,9 @@ namespace MonoFactory
         {
             // init spritebatch
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            // TODO: add actual font
+            _gameFont = Content.Load<SpriteFont>("GameFont");
             _pixelTexture = new Texture2D(GraphicsDevice, 1, 1);
             _pixelTexture.SetData(new Color[] { Color.White });
 
@@ -109,11 +125,64 @@ namespace MonoFactory
             world.AddEntity(turret);
         }
 
+        private void InitializeLevel()
+        {
+            // reset the world for a new game
+            world = new WorldManager(Content.Load<Texture2D>("tile_grass"));
+
+            var inputReader = new KeyboardReader();
+
+            hero = new Hero(_heroTexture, inputReader, new Vector2(100, 100), world);
+            world.AddEntity(hero);
+
+            var chest = _entityFactory.CreateEntity("Chest", new Vector2(300, 300));
+            world.AddEntity(chest);
+
+            var enemy = _entityFactory.CreateEntity("Goblin_Chaser", new Vector2(600, 300));
+            world.AddEntity(enemy);
+
+            camera = new Camera();
+        }
+
         protected override void Update(GameTime gameTime)
         {
             KeyboardState state = Keyboard.GetState();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            var kState = Keyboard.GetState();
+
+            world.Update(gameTime);
+            hero.Update(gameTime);
+
+            switch(_currentState)
+            {
+                case GameState.Menu:
+                    if (kState.IsKeyDown(Keys.Enter))
+                    {
+                        InitializeLevel();
+                        _currentState = GameState.Playing;
+                    }
+                    break;
+                case GameState.Playing:
+                    UpdateGamePlay(gameTime);
+                    CheckGameOverCondition();
+                    break;
+                case GameState.GameOver:
+                case GameState.Victory:
+                    if (kState.IsKeyDown(Keys.Enter))
+                    {
+                        _currentState = GameState.Menu;
+                    }
+                    break;
+            }
+
+            base.Update(gameTime);
+        }
+
+        private void UpdateGamePlay(GameTime gameTime)
+        {
+            var kState = Keyboard.GetState();
 
             world.Update(gameTime);
             hero.Update(gameTime);
@@ -121,7 +190,7 @@ namespace MonoFactory
             // camera follows player
             camera.Follow(hero.Position, targetWidth, targetHeight);
 
-            if (state.IsKeyDown(Keys.E) && !_prevKeyState.IsKeyDown(Keys.E))
+            if (kState.IsKeyDown(Keys.E) && !_prevKeyState.IsKeyDown(Keys.E))
             {
                 IInteractable machine = world.GetNearestInteractable(hero.Position, InteractionRadius);
                 if (machine != null)
@@ -130,36 +199,76 @@ namespace MonoFactory
                 }
             }
 
-            _prevKeyState = state;
-            base.Update(gameTime);
+            _prevKeyState = kState;
+        }
+
+        private void CheckGameOverCondition()
+        {
+            // TODO: add actual thing later
+            if (hero.Position.Y > 2000)
+            {
+                _currentState = GameState.GameOver;
+            }
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // matrix to squish Y axis
-            Matrix tiltMatrix = Matrix.CreateScale(1.0f, 0.6f, 1.0f);
+            spriteBatch.Begin();
 
-            // combine camera and tilt
-            Matrix groundTransform = camera.Transform * tiltMatrix;
-
-            spriteBatch.Begin(transformMatrix: groundTransform, samplerState: SamplerState.PointClamp);
-
-            world.Draw(spriteBatch, camera, GraphicsDevice);
-
-            hero.Draw(spriteBatch);
-
-            IInteractable nearby = world.GetNearestInteractable(hero.Position, InteractionRadius);
-
-            if (nearby != null && !(nearby is Enemy))
+            switch (_currentState)
             {
-                Vector2 promptPos = nearby.Position - new Vector2(0, 50);
-                spriteBatch.Draw(_pixelTexture, new Rectangle((int)promptPos.X, (int)promptPos.Y, 20, 20), Color.Yellow);
+                case GameState.Menu:
+                    DrawTextCentered("MONO FACTORY", -50);
+                    DrawTextCentered("Press ENTER to start", 50);
+                    break;
+                case GameState.Playing:
+                    spriteBatch.End();
+
+                    // matrix to squish Y axis
+                    Matrix tiltMatrix = Matrix.CreateScale(1.0f, 0.6f, 1.0f);
+
+                    // combine camera and tilt
+                    Matrix groundTransform = camera.Transform * tiltMatrix;
+
+                    spriteBatch.Begin(transformMatrix: groundTransform, samplerState: SamplerState.PointClamp);
+
+                    world.Draw(spriteBatch, camera, GraphicsDevice);
+
+                    hero.Draw(spriteBatch);
+
+                    IInteractable nearby = world.GetNearestInteractable(hero.Position, InteractionRadius);
+
+                    if (nearby != null && !(nearby is Enemy))
+                    {
+                        Vector2 promptPos = nearby.Position - new Vector2(0, 50);
+                        spriteBatch.Draw(_pixelTexture, new Rectangle((int)promptPos.X, (int)promptPos.Y, 20, 20), Color.Yellow);
+                    }
+                    spriteBatch.End();
+                    spriteBatch.Begin();
+                    break;
+                case GameState.GameOver:
+                    GraphicsDevice.Clear(Color.Black);
+                    DrawTextCentered("GAME OVER", 0, Color.Red);
+                    DrawTextCentered("Press ENTER to Main Menu", 50);
+                    break;
             }
             spriteBatch.End();
+        }
 
-            base.Draw(gameTime);
+        private void DrawTextCentered(string text, float offsetY, Color? color = null)
+        {
+            if (_gameFont == null)
+            {
+                return;
+            }
+
+            Vector2 size = _gameFont.MeasureString(text);
+            Vector2 center = new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
+            Vector2 pos = center - size / 2 + new Vector2(0, offsetY);
+
+            spriteBatch.DrawString(_gameFont, text, pos, color ?? Color.White);
         }
     }
 }
