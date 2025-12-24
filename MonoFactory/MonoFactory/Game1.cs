@@ -264,7 +264,7 @@ namespace MonoFactory
 
                     IInteractable nearby = world.GetNearestInteractable(hero.Position, InteractionRadius);
 
-                    if (nearby != null && !(nearby is Enemy))
+                    if (nearby != null)
                     {
                         Vector2 promptPos = nearby.Position - new Vector2(0, 50);
                         spriteBatch.Draw(_pixelTexture, new Rectangle((int)promptPos.X, (int)promptPos.Y, 20, 20), Color.Yellow);

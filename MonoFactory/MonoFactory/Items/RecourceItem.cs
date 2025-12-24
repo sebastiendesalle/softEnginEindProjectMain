@@ -11,7 +11,7 @@ namespace MonoFactory.Items
         public string Name { get; private set; }
         public int StackSize { get; private set; } = 99;
 
-        public ResourceItem(string name)
+        public RecourceItem(string name)
         {
             Name = name;
         }

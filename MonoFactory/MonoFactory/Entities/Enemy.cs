@@ -132,9 +132,19 @@ namespace MonoFactory.Entities
                 0f);
         }
 
-        public void Interact(Hero hero)
+        public void TakeDamage(int amount)
         {
             // TODO: implement logic for taking damage from enemy
+            Health -= amount;
+            if (Health <= 0)
+            {
+                Die();
+            }
+        }
+
+        private void Die()
+        {
+            Position = new Vector2(-9000, -9000);
         }
     }
 }
