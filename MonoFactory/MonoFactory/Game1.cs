@@ -6,6 +6,7 @@ using MonoFactory.Entities;
 using MonoFactory.Entities.Interfaces;
 using MonoFactory.Factories;
 using MonoFactory.Inputs;
+using MonoFactory.Items;
 using MonoFactory.Managers;
 using MonoFactory.Strategies;
 using System.Collections.Generic;

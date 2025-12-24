@@ -6,6 +6,7 @@ using MonoFactory.Managers;
 using MonoFactory.Entities.Interfaces;
 using MonoFactory.Components.Animation;
 using MonoFactory.Components;
+using MonoFactory.Items;
 
 namespace MonoFactory.Entities
 {
