@@ -1,13 +1,14 @@
-﻿using MonoFactory.Inputs;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System.Collections.Generic;
 using MonoFactory.Core;
-using MonoFactory.Managers;
-using MonoFactory.Factories;
-using MonoFactory.Entities.Interfaces;
 using MonoFactory.Entities;
+using MonoFactory.Entities.Interfaces;
+using MonoFactory.Factories;
+using MonoFactory.Inputs;
+using MonoFactory.Managers;
+using MonoFactory.Strategies;
+using System.Collections.Generic;
 
 namespace MonoFactory
 {
@@ -44,6 +45,7 @@ namespace MonoFactory
 
         private EntityFactory _entityFactory;
 
+        private int _currentLevelIndex = 1;
 
         public Game1()
         {
@@ -73,7 +75,6 @@ namespace MonoFactory
             // init spritebatch
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: add actual font
             _gameFont = Content.Load<SpriteFont>("GameFont");
             _pixelTexture = new Texture2D(GraphicsDevice, 1, 1);
             _pixelTexture.SetData(new Color[] { Color.White });
@@ -91,57 +92,66 @@ namespace MonoFactory
             world = new WorldManager(grassTexture);
 
             // setup factory
-            _entityFactory = new EntityFactory(world);
+            _entityFactory = new EntityFactory();
 
             _entityFactory.RegisterTexture("Chest", chestTexture);
             _entityFactory.RegisterTexture("Goblin_Chaser", enemyTexture);
             _entityFactory.RegisterTexture("Goblin_Patrol", enemyTexture);
             _entityFactory.RegisterTexture("Goblin_Turret", enemyTexture);
 
-            // chests
-            world.AddEntity(_entityFactory.CreateEntity("Chest", GridHelper.GridToWorld(8, 8)));
+            _entityFactory.RegisterCreator("Chest", (pos, tex) =>
+                new Chest(tex, pos));
 
-            // hero
-            var inputReader = new KeyboardReader();
-            hero = new Hero(_heroTexture, inputReader, new Vector2(900, 500), world, scale: 2f);
+            _entityFactory.RegisterCreator("Goblin_Chaser", (pos, tex) =>
+                new Enemy(tex, pos, new ChaseStrategy(), world));
 
-            // enemies
-            IGameObject chaser = _entityFactory.CreateEntity("Goblin_Chaser", new Vector2(400, 400));
-            IGameObject patroller = _entityFactory.CreateEntity("Goblin_Patrol", new Vector2(600, 200));
-            IGameObject turret = _entityFactory.CreateEntity("Goblin_Turret", new Vector2(800, 600));
-
-            // set targets
-            if (chaser is Enemy e1)
+            _entityFactory.RegisterCreator("Goblin_Patrol", (pos, tex) =>
             {
-                e1.SetTarget(hero);
-            }
-            if (patroller is Enemy e2)
-            {
-                e2.SetTarget(hero);
-            }
+                Vector2 endPos = pos + new Vector2(200, 0);
+                return new Enemy(tex, pos, new PatrolStrategy(pos, endPos), world);
+            });
 
-            world.AddEntity(chaser);
-            world.AddEntity(patroller);
-            world.AddEntity(turret);
+            _entityFactory.RegisterCreator("Goblin_Turret", (pos, tex) =>
+                new Enemy(tex, pos, new StationaryStrategy(), world));
         }
 
-        private void InitializeLevel()
+        private void LoadLevel(int levelIndex)
         {
+
+            _currentLevelIndex = levelIndex;
             // reset the world for a new game
             world = new WorldManager(Content.Load<Texture2D>("tile_grass"));
+            camera = new Camera();
 
             var inputReader = new KeyboardReader();
 
-            hero = new Hero(_heroTexture, inputReader, new Vector2(100, 100), world);
+            hero = new Hero(_heroTexture, inputReader, GridHelper.GridToWorld(5, 5), world, scale: 2f);
             world.AddEntity(hero);
 
-            var chest = _entityFactory.CreateEntity("Chest", new Vector2(300, 300));
-            world.AddEntity(chest);
+            if (levelIndex == 1)
+            {
+                world.AddEntity(_entityFactory.CreateEntity("Chest", GridHelper.GridToWorld(8, 8)));
 
-            var enemy = _entityFactory.CreateEntity("Goblin_Chaser", new Vector2(600, 300));
-            world.AddEntity(enemy);
+                IGameObject patroller = _entityFactory.CreateEntity("Goblin_Patrol", GridHelper.GridToWorld(10, 5));
+                if (patroller is Enemy e) e.SetTarget(hero);
+                world.AddEntity(patroller);
+            }
+            else if (levelIndex == 2)
+            {
+                IGameObject chaser1 = _entityFactory.CreateEntity("Goblin_Chaser", GridHelper.GridToWorld(15, 2));
+                IGameObject chaser2 = _entityFactory.CreateEntity("Goblin_Chaser", GridHelper.GridToWorld(20, 10));
+                IGameObject turret = _entityFactory.CreateEntity("Goblin_Turret", GridHelper.GridToWorld(12, 12));
 
-            camera = new Camera();
+                if (chaser1 is Enemy e1) e1.SetTarget(hero);
+                if (chaser2 is Enemy e2) e2.SetTarget(hero);
+                if (turret is Enemy e3) e3.SetTarget(hero);
+
+                world.AddEntity(chaser1);
+                world.AddEntity(chaser2);
+                world.AddEntity(turret);
+
+                world.AddEntity(_entityFactory.CreateEntity("Chest", GridHelper.GridToWorld(22, 10)));
+            }
         }
 
         protected override void Update(GameTime gameTime)
@@ -152,15 +162,12 @@ namespace MonoFactory
 
             var kState = Keyboard.GetState();
 
-            world.Update(gameTime);
-            hero.Update(gameTime);
-
             switch(_currentState)
             {
                 case GameState.Menu:
                     if (kState.IsKeyDown(Keys.Enter))
                     {
-                        InitializeLevel();
+                        LoadLevel(1);
                         _currentState = GameState.Playing;
                     }
                     break;
@@ -190,6 +197,8 @@ namespace MonoFactory
             // camera follows player
             camera.Follow(hero.Position, targetWidth, targetHeight);
 
+            CheckLevelTransition();
+
             if (kState.IsKeyDown(Keys.E) && !_prevKeyState.IsKeyDown(Keys.E))
             {
                 IInteractable machine = world.GetNearestInteractable(hero.Position, InteractionRadius);
@@ -200,6 +209,21 @@ namespace MonoFactory
             }
 
             _prevKeyState = kState;
+        }
+
+        private void CheckLevelTransition()
+        {
+            if (hero.Position.X > 1000)
+            {
+                if (_currentLevelIndex == 1)
+                {
+                    LoadLevel(2);
+                }
+                else
+                {
+                    _currentState = GameState.Victory;
+                }
+            }
         }
 
         private void CheckGameOverCondition()

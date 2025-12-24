@@ -11,18 +11,26 @@ namespace MonoFactory.Factories
 {
     public class EntityFactory // factory pattern
     {
-        // store textures
+        // store textures / flyweight pattern
         private Dictionary<string, Texture2D> _textureLibrary;
         private Dictionary<string, Func<Vector2, Texture2D, IGameObject>> _creators;
-        private WorldManager _world;
+        //private WorldManager _world;
 
-        public EntityFactory(WorldManager world)
+        public EntityFactory()
         {
-            _world = world;
+            //_world = world;
             _textureLibrary = new Dictionary<string, Texture2D>();
             _creators = new Dictionary<string, Func<Vector2, Texture2D, IGameObject>>();
 
-            InitializeDefaultCreators();
+            //InitializeDefaultCreators();
+        }
+
+        public void RegisterCreator(string id, Func<Vector2, Texture2D, IGameObject> creator)
+        {
+            if (!_creators.ContainsKey(id))
+            {
+                _creators.Add(id, creator);
+            }
         }
 
         public void RegisterTexture(string key, Texture2D texture)
@@ -31,21 +39,6 @@ namespace MonoFactory.Factories
             {
                 _textureLibrary.Add(key, texture);
             }
-        }
-
-        private void InitializeDefaultCreators() // OCP
-        {
-            _creators["Chest"] = (pos, tex) => new Chest(tex, pos);
-
-            _creators["Goblin_Chaser"] = (pos, tex) => new Enemy(tex, pos, new ChaseStrategy(), _world);
-
-            _creators["Goblin_Patrol"] = (pos, tex) =>
-            {
-                Vector2 endPos = pos + new Vector2(200, 0);
-                return new Enemy(tex, pos, new PatrolStrategy(pos, endPos), _world);
-            };
-
-            _creators["Goblin_Turret"] = (pos, tex) => new Enemy(tex, pos, new StationaryStrategy(), _world);
         }
 
         public IGameObject CreateEntity(string type, Vector2 position)
@@ -57,10 +50,9 @@ namespace MonoFactory.Factories
 
             if (!_creators.ContainsKey(type))
             {
-                return new Enemy(_textureLibrary[type], position, new StationaryStrategy(), _world);
+                throw new Exception($"Creator for {type} not found.");
             }
-            Texture2D texture = _textureLibrary[type];
-            return _creators[type](position, texture);
+            return _creators[type](position, _textureLibrary[type]);
         }
     }
 }
