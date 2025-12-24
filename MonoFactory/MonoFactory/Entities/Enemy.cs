@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace MonoFactory.Entities
 {
-    public class Enemy: IGameObject, IInteractable
+    public class Enemy: IGameObject, IDamageable
     {
         public Vector2 Position { get; private set; }
         private Texture2D _texture;
@@ -25,7 +25,9 @@ namespace MonoFactory.Entities
 
         private IMovementStrategy _movementStrategy;
         private Hero _targetHero;
-        private const int FrameSize = 64;
+
+        public int Health { get; private set; } = 3;
+
         private const float Scale = 3.0f;
 
         public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy, WorldManager world)
