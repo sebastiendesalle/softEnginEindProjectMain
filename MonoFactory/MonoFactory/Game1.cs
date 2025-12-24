@@ -39,6 +39,7 @@ namespace MonoFactory
         private KeyboardState _prevKeyState;
 
         private const float InteractionRadius = 200f;
+        private ICommand _interactCommand;
 
         // set target window size
         private const int targetWidth = 1920;
@@ -123,6 +124,7 @@ namespace MonoFactory
             // reset the world for a new game
             world = new WorldManager(Content.Load<Texture2D>("tile_grass"));
             camera = new Camera();
+            _interactCommand = new InteractCommand(world);
 
             var inputReader = new KeyboardReader();
 
@@ -200,13 +202,10 @@ namespace MonoFactory
 
             CheckLevelTransition();
 
+            // implementing command pattern
             if (kState.IsKeyDown(Keys.E) && !_prevKeyState.IsKeyDown(Keys.E))
             {
-                IInteractable machine = world.GetNearestInteractable(hero.Position, InteractionRadius);
-                if (machine != null)
-                {
-                    machine.Interact(hero);
-                }
+                _interactCommand.Execute(hero);
             }
 
             _prevKeyState = kState;
