@@ -109,7 +109,7 @@ namespace MonoFactory.Managers
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch, Camera camera, GraphicsDevice graphics)
+        public void Draw(SpriteBatch spriteBatch, Camera camera, GraphicsDevice graphics, Texture2D debugPixel = null)
         {
             // calc visible world area
             Matrix inverseView = Matrix.Invert(camera.Transform);
@@ -146,7 +146,19 @@ namespace MonoFactory.Managers
             foreach (var entity in _entities.OrderBy(e => e.Rectangle.Bottom))
             {
                 entity.Draw(spriteBatch);
+
+                if (debugPixel != null)
+                {
+                    DrawBorder(spriteBatch, debugPixel, entity.Rectangle, Color.Red, 2);
+                }
             }
+        }
+        private void DrawBorder(SpriteBatch sb, Texture2D pixel, Rectangle rect, Color color, int thickness)
+        {
+            sb.Draw(pixel, new Rectangle(rect.X, rect.Y, rect.Width, thickness), color);
+            sb.Draw(pixel, new Rectangle(rect.X, rect.Bottom, rect.Width, thickness), color);
+            sb.Draw(pixel, new Rectangle(rect.X, rect.Y, thickness, rect.Height), color);
+            sb.Draw(pixel, new Rectangle(rect.Right, rect.Y, thickness, rect.Height), color);
         }
 
         private void DrawGrass(SpriteBatch spriteBatch, Vector2 position)

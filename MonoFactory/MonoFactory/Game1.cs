@@ -11,6 +11,7 @@ using MonoFactory.Items;
 using MonoFactory.Managers;
 using MonoFactory.Strategies;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace MonoFactory
 {
@@ -49,6 +50,8 @@ namespace MonoFactory
         private EntityFactory _entityFactory;
 
         private int _currentLevelIndex = 1;
+
+        private bool _showDebugHitboxes = true;
 
         public Game1()
         {
@@ -268,7 +271,12 @@ namespace MonoFactory
 
                     spriteBatch.Begin(transformMatrix: groundTransform, samplerState: SamplerState.PointClamp);
 
-                    world.Draw(spriteBatch, camera, GraphicsDevice);
+                    world.Draw(spriteBatch, camera, GraphicsDevice, _showDebugHitboxes ? _pixelTexture : null);
+
+                    if (_showDebugHitboxes)
+                    {
+                        DrawDebugHitbox(spriteBatch, hero.Rectangle, Color.Red);
+                    }
 
 
                     IInteractable nearby = world.GetNearestInteractable(hero.Position, InteractionRadius);
@@ -302,6 +310,20 @@ namespace MonoFactory
             Vector2 pos = center - size / 2 + new Vector2(0, offsetY);
 
             spriteBatch.DrawString(_gameFont, text, pos, color ?? Color.White);
+        }
+
+        public void DrawDebugHitbox(SpriteBatch batch, Rectangle rect, Color color)
+        {
+            int lineWidth = 2;
+
+            // top
+            batch.Draw(_pixelTexture, new Rectangle(rect.X, rect.Y, rect.Width, lineWidth), color);
+            //bottom
+            batch.Draw(_pixelTexture, new Rectangle(rect.X, rect.Bottom, rect.Width, lineWidth), color);
+            //left
+            batch.Draw(_pixelTexture, new Rectangle(rect.X, rect.Y, lineWidth, rect.Height), color);
+            // right
+            batch.Draw(_pixelTexture, new Rectangle(rect.Right, rect.Y, lineWidth, rect.Height), color);
         }
     }
 }
