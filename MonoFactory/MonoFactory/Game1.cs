@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoFactory.Core;
 using MonoFactory.Entities;
 using MonoFactory.Entities.Interfaces;
+using MonoFactory.Entities.Machines;
 using MonoFactory.Factories;
 using MonoFactory.Inputs;
 using MonoFactory.Items;
@@ -90,6 +91,7 @@ namespace MonoFactory
             Texture2D enemyTexture = Content.Load<Texture2D>("Skeleton enemy");
             Texture2D chestTexture = Content.Load<Texture2D>("chest");
 
+
             // init world
             world = new WorldManager(grassTexture);
 
@@ -100,6 +102,9 @@ namespace MonoFactory
             _entityFactory.RegisterTexture("Goblin_Chaser", enemyTexture);
             _entityFactory.RegisterTexture("Goblin_Patrol", enemyTexture);
             _entityFactory.RegisterTexture("Goblin_Turret", enemyTexture);
+
+            //TODO: find Furnace texture
+            _entityFactory.RegisterTexture("Furnace", chestTexture);
 
             _entityFactory.RegisterCreator("Chest", (pos, tex) =>
                 new Chest(tex, pos));
@@ -115,6 +120,9 @@ namespace MonoFactory
 
             _entityFactory.RegisterCreator("Goblin_Turret", (pos, tex) =>
                 new Enemy(tex, pos, new StationaryStrategy(), world));
+
+            _entityFactory.RegisterCreator("Furnace", (pos, tex) =>
+                new Machine(tex, pos));
         }
 
         private void LoadLevel(int levelIndex)
@@ -134,10 +142,13 @@ namespace MonoFactory
             if (levelIndex == 1)
             {
                 world.AddEntity(_entityFactory.CreateEntity("Chest", GridHelper.GridToWorld(8, 8)));
+                world.AddEntity(_entityFactory.CreateEntity("Furnace", GridHelper.GridToWorld(14, 10)));
 
                 IGameObject patroller = _entityFactory.CreateEntity("Goblin_Patrol", GridHelper.GridToWorld(10, 5));
                 if (patroller is Enemy e) e.SetTarget(hero);
                 world.AddEntity(patroller);
+
+                hero.Inventory.AddItem(new ResourceItem("Stone"), 5);
             }
             else if (levelIndex == 2)
             {

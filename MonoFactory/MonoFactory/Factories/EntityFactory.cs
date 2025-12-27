@@ -45,6 +45,7 @@ namespace MonoFactory.Factories
         {
             if (!_textureLibrary.ContainsKey(type))
             {
+                
                 throw new Exception($"Texture for {type} not found.");
             }
 
@@ -54,5 +55,6 @@ namespace MonoFactory.Factories
             }
             return _creators[type](position, _textureLibrary[type]);
         }
+
     }
 }

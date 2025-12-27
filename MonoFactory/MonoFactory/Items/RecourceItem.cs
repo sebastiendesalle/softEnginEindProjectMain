@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace MonoFactory.Items
 {
-    public class RecourceItem: IItem
+    public class ResourceItem: IItem
     {
         public string Name { get; private set; }
         public int StackSize { get; private set; } = 99;
 
-        public RecourceItem(string name)
+        public ResourceItem(string name)
         {
             Name = name;
         }
