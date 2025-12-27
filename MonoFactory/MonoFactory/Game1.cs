@@ -206,7 +206,6 @@ namespace MonoFactory
             var kState = Keyboard.GetState();
 
             world.Update(gameTime);
-            hero.Update(gameTime);
 
             // camera follows player
             camera.Follow(hero.Position, targetWidth, targetHeight);
@@ -271,7 +270,6 @@ namespace MonoFactory
 
                     world.Draw(spriteBatch, camera, GraphicsDevice);
 
-                    hero.Draw(spriteBatch);
 
                     IInteractable nearby = world.GetNearestInteractable(hero.Position, InteractionRadius);
 
