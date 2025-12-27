@@ -23,6 +23,9 @@ namespace MonoFactory.Entities
         private int _hitBoxWidth;
         private int _hitBoxHeight;
 
+        private int _offsetX = 0;
+        private int _offsetY = 0;
+
         public Rectangle _closedSourceRect;
 
 
@@ -36,14 +39,16 @@ namespace MonoFactory.Entities
             _openAnimation.IsLooping = false;
 
             _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 0, 54, 48)));
-            _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 48, 54, 16)));
+            _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 48, 54, 48)));
             _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 96, 54, 48)));
             _openAnimation.AddFrame(new AnimationFrame(new Rectangle(0, 144, 54, 48)));
 
             _closedSourceRect = new Rectangle(0, 0, FrameWidth, FrameHeight);
 
-            _hitBoxWidth = (int)(FrameWidth * Scale * 0.8f);
-            _hitBoxHeight = (int)(20 * Scale);
+            _hitBoxWidth = (int)(FrameWidth * Scale * 0.8);
+            _hitBoxHeight = (int)(35 * Scale);
+
+            _offsetY = 0;
         }
 
         public Rectangle Rectangle => new Rectangle((int)(Position.X - _hitBoxWidth / 2),
@@ -84,12 +89,14 @@ namespace MonoFactory.Entities
                 drawRect = _closedSourceRect;
             }
 
+            Vector2 origin = new Vector2(drawRect.Width / 2f, drawRect.Height);
+
             spriteBatch.Draw(_texture,
                 Position,
                 drawRect,
                 Color.White,
                 0f,
-                Vector2.Zero,
+                origin,
                 Scale,
                 SpriteEffects.None,
                 0f);
