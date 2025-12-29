@@ -21,6 +21,9 @@ namespace MonoFactory.Entities
         private int _hitBoxWidth;
         private int _hitBoxHeight;
 
+        private int _offsetX = 0;
+        private int _offsetY = 0;
+
         private SpriteEffects _flipEffect = SpriteEffects.None;
 
         private IMovementStrategy _movementStrategy;
@@ -39,8 +42,10 @@ namespace MonoFactory.Entities
 
             LoadAnimations();
 
-            _hitBoxWidth = (int)(25 * Scale);
-            _hitBoxHeight = (int)(15 * Scale);
+            _hitBoxWidth = (int)(20 * Scale);
+            _hitBoxHeight = (int)(40 * Scale);
+
+            _offsetY = -(int)(10 * Scale);
         }
 
         public void LoadAnimations()
@@ -69,7 +74,7 @@ namespace MonoFactory.Entities
             _targetHero = hero;
         }
 
-        public Rectangle Rectangle => new Rectangle((int)(Position.X - _hitBoxWidth / 2), (int)(Position.Y - _hitBoxHeight), _hitBoxWidth, _hitBoxHeight);
+        public Rectangle Rectangle => new Rectangle((int)(Position.X - _hitBoxWidth / 2) + _offsetX, (int)(Position.Y - _hitBoxHeight) + _offsetY, _hitBoxWidth, _hitBoxHeight);
 
         public void Update(GameTime gameTime)
         {
@@ -81,15 +86,23 @@ namespace MonoFactory.Entities
             if (_movementStrategy != null)
             {
                 Vector2 targetPos = _targetHero != null ? _targetHero.Position : Position;
-                Position = _movementStrategy.Move(gameTime, Position, targetPos);
+                desiredPosition = _movementStrategy.Move(gameTime, Position, targetPos);
             }
 
-            Rectangle futureRect = new Rectangle((int)(desiredPosition.X - _hitBoxWidth / 2), (int)(desiredPosition.Y - _hitBoxHeight),
-                _hitBoxWidth, _hitBoxHeight);
+            Vector2 delta = desiredPosition - Position;
 
-            if (!_world.IsCollision(futureRect, this))
+            Rectangle futureRectX = new Rectangle((int)(Position.X + delta.X - _hitBoxWidth / 2) + _offsetX, (int)(Position.Y - _hitBoxHeight) + _offsetY, _hitBoxWidth, _hitBoxHeight);
+
+            if (!_world.IsCollision(futureRectX, this))
             {
-                Position = desiredPosition;
+                Position = new Vector2(Position.X + delta.X, Position.Y);
+            }
+
+            Rectangle futureRectY = new Rectangle((int)(Position.X - _hitBoxWidth / 2) + _offsetX, (int)(Position.Y + delta.Y - _hitBoxHeight) + _offsetY, _hitBoxWidth, _hitBoxHeight);
+
+            if (!_world.IsCollision(futureRectY, this))
+            {
+                Position = new Vector2(Position.X, Position.Y + delta.Y);
             }
 
             Vector2 movement = Position - previousPos;
