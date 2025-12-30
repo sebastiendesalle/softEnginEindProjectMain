@@ -41,9 +41,13 @@ namespace MonoFactory.Entities
         private float _damageCooldown = 0f;
         private const float DamageDelay = 1.0f;
 
-        private const float AttackRange = 75.0f;
+        private const float AttackRange = 100.0f;
 
         private Random _random;
+
+        private bool _isAttacking = false;
+        private bool _isDead = false;
+        private bool _isVisible = true;
 
         public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy, WorldManager world)
         {
@@ -115,15 +119,68 @@ namespace MonoFactory.Entities
             _targetHero = hero;
         }
 
-        public Rectangle Rectangle => new Rectangle((int)(Position.X - _hitBoxWidth / 2) + _offsetX, (int)(Position.Y - _hitBoxHeight) + _offsetY, _hitBoxWidth, _hitBoxHeight);
+        public Rectangle Rectangle
+        {
+            get
+            {
+                if (!_isVisible)
+                {
+                    return Rectangle.Empty;
+                }
+                return new Rectangle((int)(Position.X - _hitBoxWidth / 2) + _offsetX, (int)(Position.Y - _hitBoxHeight) + _offsetY, _hitBoxWidth, _hitBoxHeight);
+            }
+        }
 
         public void Update(GameTime gameTime)
         {
+
+            if (!_isVisible)
+            {
+                return;
+            }
             Vector2 previousPos = Position;
 
             Vector2 desiredPosition = Position;
 
-            float time = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (_isDead)
+            {
+                _currentAnimation.Update(gameTime);
+                if (_currentAnimation.IsFinished)
+                {
+                    _isVisible = false;
+
+                    Position = new Vector2(-9000, -9000);
+                }
+                return;
+            }
+
+            if (_isAttacking)
+            {
+                _currentAnimation.Update(gameTime);
+                if (_currentAnimation.IsFinished)
+                {
+                    _isAttacking = false;
+                    _currentAnimation = _animations["Idle"];
+                }
+                return;
+            }
+
+            if (_damageCooldown > 0)
+            {
+                _damageCooldown -= deltaTime;
+            }
+
+            if (_damageFlashTimer > 0)
+            {
+                _damageFlashTimer -= deltaTime;
+                _tintColor = Color.Red;
+            }
+            else
+            {
+                _tintColor = Color.White;
+            }
 
             // move via strategy
             if (_movementStrategy != null)
@@ -170,46 +227,47 @@ namespace MonoFactory.Entities
             // update animation
             _currentAnimation.Update(gameTime);
 
-            if (_damageFlashTimer > 0)
-            {
-                _damageFlashTimer -= time;
-                _tintColor = Color.Red;
-            }
-            else
-            {
-                _tintColor = Color.White;
-            }
-
-            if (_damageCooldown > 0)
-            {
-                _damageCooldown -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-
-            if (_targetHero == null)
-            {
-                Debug.WriteLine("no target hero set");
-            }
-            else
+            if (_targetHero != null)
             {
                 float dist = Vector2.Distance(Position, _targetHero.Position);
-                if (dist < AttackRange)
+                if (dist < AttackRange && _damageCooldown <= 0)
                 {
-                    if (_damageCooldown <= 0)
+                    _isAttacking = true;
+
+                    if (_targetHero.Position.X < Position.X)
                     {
-                        Debug.WriteLine($"Dealing damage to hero. Dist: {dist}");
-                        _targetHero.TakeDamage(1);
-                        _damageCooldown = DamageDelay;
+                        _flipEffect = SpriteEffects.FlipHorizontally;
                     }
                     else
                     {
-                        Debug.WriteLine("In range, but cooldown active");
+                        _flipEffect = SpriteEffects.None;
                     }
+                    if (_random.Next(0, 2) == 0)
+                    {
+                        _currentAnimation = _animations["Attack1"];
+                    }
+                    else
+                    {
+                        _currentAnimation = _animations["Attack2"];
+                    }
+
+                    _currentAnimation.Reset();
+
+                    _targetHero.TakeDamage(1);
+                    _damageCooldown = DamageDelay;
                 }
+
+                
             }
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
+
+            if (!_isVisible)
+            {
+                return;
+            }
 
             Rectangle src = _currentAnimation.CurrentFrame.SourceRectangle;
 
@@ -227,6 +285,12 @@ namespace MonoFactory.Entities
 
         public void TakeDamage(int amount)
         {
+
+            if (_isDead)
+            {
+                return;
+            }
+
             Health -= amount;
 
             _damageFlashTimer = 0.2f;
@@ -238,7 +302,9 @@ namespace MonoFactory.Entities
 
         private void Die()
         {
-            Position = new Vector2(-9000, -9000);
+            _isDead = true;
+            _currentAnimation = _animations["Death"];
+            _currentAnimation.Reset();
         }
     }
 }
