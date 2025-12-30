@@ -40,6 +40,8 @@ namespace MonoFactory.Entities
         private int _hitBoxWidth;
         private int _hitBoxHeight;
 
+        private bool _isAttacking = false;
+
         public Rectangle Rectangle => new Rectangle((int)(Position.X - _hitBoxWidth / 2), (int)(Position.Y - _hitBoxHeight), _hitBoxWidth, _hitBoxHeight);
 
         public Hero(Texture2D texture, IInputReader inputReader, Vector2 startPos, WorldManager world, float scale = 5f)
@@ -78,6 +80,15 @@ namespace MonoFactory.Entities
             jumpAnim.AddFrame(new AnimationFrame(new Rectangle(0, 640, 64, 64)));
             jumpAnim.AddFrame(new AnimationFrame(new Rectangle(64, 640, 64, 64)));
             animations.Add("Jump", jumpAnim);
+
+            var attackAnim = new Animation();
+            attackAnim.IsLooping = false;
+            attackAnim.FPS = 15;
+            for (int i = 0; i < 6; i++)
+            {
+                attackAnim.AddFrame(new AnimationFrame(new Rectangle(i * 64, 256, 64, 64)));
+            }
+            animations.Add("Attack", attackAnim);
 
             // Set Default
             currentAnimation = animations["Idle"];
@@ -143,6 +154,18 @@ namespace MonoFactory.Entities
 
         private void UpdateAnimationState(Vector2 input)
         {
+
+            if (_isAttacking)
+            {
+                if (currentAnimation.IsFinished)
+                {
+                    _isAttacking = false;
+                }
+                else
+                {
+                    return;
+                }
+            }
             // Simple State Logic
             if (input != Vector2.Zero)
             {
@@ -156,6 +179,16 @@ namespace MonoFactory.Entities
             // Flip Logic
             if (input.X > 0) flipEffect = SpriteEffects.None;
             else if (input.X < 0) flipEffect = SpriteEffects.FlipHorizontally;
+        }
+
+        public void TriggerAttack()
+        {
+            if (!_isAttacking)
+            {
+                _isAttacking = true;
+                currentAnimation = animations["Attack"];
+                currentAnimation.Reset();
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)

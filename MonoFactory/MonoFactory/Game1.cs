@@ -48,7 +48,7 @@ namespace MonoFactory
         private ICommand _attackCommand;
 
         private float _attackCooldown = 0f;
-        private const float AttackDelay = 0.2f;
+        private const float AttackDelay = 0.4f;
 
         // set target window size
         private const int targetWidth = 1920;
@@ -247,6 +247,8 @@ namespace MonoFactory
                 {
                     if (_attackCommand != null)
                     {
+                        hero.TriggerAttack();
+
                         _attackCommand.Execute(hero);
                         _attackCooldown = AttackDelay;
                     }

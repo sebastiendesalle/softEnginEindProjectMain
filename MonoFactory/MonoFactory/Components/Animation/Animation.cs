@@ -16,6 +16,8 @@ namespace MonoFactory.Components.Animation
         private double secondCounter = 0;
 
         public bool IsLooping { get; set; } = true;
+
+        public int FPS { get; set; } = 10;
         public Animation()
         {
             frames = new List<AnimationFrame>();
@@ -51,6 +53,24 @@ namespace MonoFactory.Components.Animation
                     counter = frames.Count - 1;
                 }
                 
+            }
+        }
+
+        public void Reset()
+        {
+            counter = 0;
+            secondCounter = 0;
+            if (frames.Count > 0)
+            {
+                CurrentFrame = frames[0];
+            }
+        }
+
+        public bool IsFinished
+        {
+            get
+            {
+                return !IsLooping && counter >= frames.Count - 1;
             }
         }
     }
