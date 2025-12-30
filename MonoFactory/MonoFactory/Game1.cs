@@ -11,6 +11,7 @@ using MonoFactory.Items;
 using MonoFactory.Managers;
 using MonoFactory.Strategies;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace MonoFactory
@@ -39,9 +40,14 @@ namespace MonoFactory
         private WorldManager world;
         private Camera camera;
         private KeyboardState _prevKeyState;
+        private MouseState _prevMouseState;
 
         private const float InteractionRadius = 200f;
         private ICommand _interactCommand;
+        private ICommand _attackCommand;
+
+        private float _attackCooldown = 0f;
+        private const float AttackDelay = 0.2f;
 
         // set target window size
         private const int targetWidth = 1920;
@@ -51,7 +57,7 @@ namespace MonoFactory
 
         private int _currentLevelIndex = 1;
 
-        private bool _showDebugHitboxes = true;
+        private bool _showDebugHitboxes = false;
 
         public Game1()
         {
@@ -137,6 +143,8 @@ namespace MonoFactory
             camera = new Camera();
             _interactCommand = new InteractCommand(world);
 
+            _attackCommand = new AttackCommand(world, damage: 1, range: 100f);
+
             var inputReader = new KeyboardReader();
 
             hero = new Hero(_heroTexture, inputReader, GridHelper.GridToWorld(5, 5), world, scale: 2f);
@@ -207,7 +215,8 @@ namespace MonoFactory
         private void UpdateGamePlay(GameTime gameTime)
         {
             var kState = Keyboard.GetState();
-
+            var mState = Mouse.GetState();
+            float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
             world.Update(gameTime);
 
             // camera follows player
@@ -221,7 +230,34 @@ namespace MonoFactory
                 _interactCommand.Execute(hero);
             }
 
+            if (_attackCooldown > 0)
+            {
+                _attackCooldown -= delta;
+            }
+
+            if (mState.LeftButton == ButtonState.Pressed && _prevMouseState.LeftButton == ButtonState.Released)
+            {
+                if (_attackCooldown <= 0)
+                {
+                    if (_attackCommand != null)
+                    {
+                        _attackCommand.Execute(hero);
+                        _attackCooldown = AttackDelay;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Attack command is null");
+                    }
+                }
+            }
+
+            if (kState.IsKeyDown(Keys.F3) && !_prevKeyState.IsKeyDown(Keys.F3))
+            {
+                _showDebugHitboxes = !_showDebugHitboxes;
+            }
+
             _prevKeyState = kState;
+            _prevMouseState = mState;
         }
 
         private void CheckLevelTransition()

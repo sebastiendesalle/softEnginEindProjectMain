@@ -5,11 +5,12 @@ using MonoFactory.Entities;
 using MonoFactory.Entities.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace MonoFactory.Managers
 {
-    public class WorldManager // mediator pattern
+    public class WorldManager
     {
 
         // store machines etc..
@@ -99,6 +100,30 @@ namespace MonoFactory.Managers
                 }
             }
             return nearest;
+        }
+
+        public void DamageEntitiesInArea(Vector2 center, float radius, int damage, IGameObject attacker)
+        {
+            var targets = _entities.ToList();
+
+            foreach (var entity in targets)
+            {
+                if (entity == attacker)
+                {
+                    continue;
+                }
+
+                if (entity is IDamageable damageable)
+                {
+                    float dist = Vector2.Distance(center, ((IGameObject)entity).Rectangle.Center.ToVector2());
+
+                    if (dist <= radius)
+                    {
+                        Debug.WriteLine($"hit for {damage} damage");
+                        damageable.TakeDamage(damage);
+                    }
+                }
+            }
         }
 
         public void Update(GameTime gameTime)
