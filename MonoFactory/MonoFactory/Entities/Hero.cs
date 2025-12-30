@@ -7,10 +7,11 @@ using MonoFactory.Entities.Interfaces;
 using MonoFactory.Components.Animation;
 using MonoFactory.Components;
 using MonoFactory.Items;
+using System.Diagnostics;
 
 namespace MonoFactory.Entities
 {
-    public class Hero : IGameObject
+    public class Hero : IGameObject, IDamageable
     {
         private Texture2D texture;
 
@@ -26,9 +27,15 @@ namespace MonoFactory.Entities
 
         private SpriteEffects flipEffect = SpriteEffects.None;
 
+        private Color _tintColor = Color.White;
+        private float _damageFlashTimer = 0f;
+
         // Public Properties
         public InventoryComponent Inventory { get; private set; }
-        public Vector2 Position => physics.Position; // Expose position for Camera
+        public Vector2 Position => physics.Position;
+
+        public int Health { get; private set; } = 10;
+        public bool IsDead => Health <= 0;
 
         private int _hitBoxWidth;
         private int _hitBoxHeight;
@@ -122,6 +129,16 @@ namespace MonoFactory.Entities
             // Update Animation State
             UpdateAnimationState(input);
             currentAnimation.Update(gameTime);
+
+            if (_damageFlashTimer > 0)
+            {
+                _damageFlashTimer -= delta;
+                _tintColor = Color.Red;
+            }
+            else
+            {
+                _tintColor = Color.White;
+            }
         }
 
         private void UpdateAnimationState(Vector2 input)
@@ -164,6 +181,15 @@ namespace MonoFactory.Entities
                 flipEffect,
                 0f
             );
+        }
+
+        public void TakeDamage(int amount)
+        {
+            Health -= amount;
+            _damageFlashTimer = 0.2f;
+
+            Debug.WriteLine($"Took damage: {Health}");
+
         }
     }
 }

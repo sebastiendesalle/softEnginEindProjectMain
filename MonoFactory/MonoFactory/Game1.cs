@@ -277,8 +277,7 @@ namespace MonoFactory
 
         private void CheckGameOverCondition()
         {
-            // TODO: add actual thing later
-            if (hero.Position.Y > 2000)
+            if (hero.IsDead)
             {
                 _currentState = GameState.GameOver;
             }
