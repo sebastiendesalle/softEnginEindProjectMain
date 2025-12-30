@@ -72,7 +72,7 @@ namespace MonoFactory.Entities
             walkAnim.AddFrame(new AnimationFrame(new Rectangle(320, 64, 64, 64)));
             animations.Add("Walk", walkAnim);
 
-            // Jump (Rows 10 & 11 - Optional if you add jumping back later)
+            // Jump (Rows 10 & 11)
             var jumpAnim = new Animation();
             jumpAnim.IsLooping = false;
             jumpAnim.AddFrame(new AnimationFrame(new Rectangle(0, 576, 64, 64)));
@@ -167,7 +167,15 @@ namespace MonoFactory.Entities
                 }
             }
             // Simple State Logic
-            if (input != Vector2.Zero)
+            if (physics.Height > 0)
+            {
+                if (currentAnimation != animations["Jump"])
+                {
+                    currentAnimation = animations["Jump"];
+                    currentAnimation.Reset();
+                }
+            }
+            else if (input != Vector2.Zero)
             {
                 currentAnimation = animations["Walk"];
             }
@@ -207,7 +215,7 @@ namespace MonoFactory.Entities
                 texture,
                 drawPosition,
                 src,
-                Color.White,
+                _tintColor,
                 0f,
                 origin,
                 drawScale, // Use the corrected scale

@@ -149,7 +149,7 @@ namespace MonoFactory
             camera = new Camera();
             _interactCommand = new InteractCommand(world);
 
-            _attackCommand = new AttackCommand(world, damage: 1, range: 100f);
+            _attackCommand = new AttackCommand(world, damage: 1, range: 150f);
 
             var inputReader = new KeyboardReader();
 

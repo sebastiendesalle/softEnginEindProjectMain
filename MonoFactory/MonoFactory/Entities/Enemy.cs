@@ -30,6 +30,9 @@ namespace MonoFactory.Entities
         private IMovementStrategy _movementStrategy;
         private Hero _targetHero;
 
+        private Color _tintColor = Color.White;
+        private float _damageFlashTimer = 0f;
+
         public int Health { get; private set; } = 3;
 
         private const float Scale = 3.0f;
@@ -88,6 +91,8 @@ namespace MonoFactory.Entities
 
             Vector2 desiredPosition = Position;
 
+            float time = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             // move via strategy
             if (_movementStrategy != null)
             {
@@ -133,6 +138,16 @@ namespace MonoFactory.Entities
             // update animation
             _currentAnimation.Update(gameTime);
 
+            if (_damageFlashTimer > 0)
+            {
+                _damageFlashTimer -= time;
+                _tintColor = Color.Red;
+            }
+            else
+            {
+                _tintColor = Color.White;
+            }
+
             if (_damageCooldown > 0)
             {
                 _damageCooldown -= (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -170,7 +185,7 @@ namespace MonoFactory.Entities
             spriteBatch.Draw(_texture, 
                 Position,
                 src,
-                Color.White,
+                _tintColor,
                 0f,
                 origin,
                 Scale,
@@ -180,8 +195,9 @@ namespace MonoFactory.Entities
 
         public void TakeDamage(int amount)
         {
-            // TODO: implement logic for taking damage from enemy
             Health -= amount;
+
+            _damageFlashTimer = 0.2f;
             if (Health <= 0)
             {
                 Die();
