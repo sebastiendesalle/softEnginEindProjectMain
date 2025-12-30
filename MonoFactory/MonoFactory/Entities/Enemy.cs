@@ -6,6 +6,7 @@ using MonoFactory.Entities.Interfaces;
 using MonoFactory.Managers;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System;
 
 namespace MonoFactory.Entities
 {
@@ -42,12 +43,16 @@ namespace MonoFactory.Entities
 
         private const float AttackRange = 75.0f;
 
+        private Random _random;
+
         public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy, WorldManager world)
         {
             _texture = texture;
             Position = startPosition;
             _movementStrategy = strategy;
             _world = world;
+
+            _random = new Random();
 
             LoadAnimations();
 
@@ -74,6 +79,33 @@ namespace MonoFactory.Entities
                 runAnim.AddFrame(new AnimationFrame(new Rectangle(i * 64, 128, 64, 64)));
             }
             _animations.Add("Run", runAnim);
+
+            var attack1 = new Animation();
+            attack1.IsLooping = false;
+            attack1.FPS = 12;
+            for (int i = 0; i < 7; i++)
+            {
+                attack1.AddFrame(new AnimationFrame(new Rectangle(i * 64, 0, 64, 64)));
+            }
+            _animations.Add("Attack1", attack1);
+
+            var attack2 = new Animation();
+            attack2.IsLooping = false;
+            attack2.FPS = 12;
+            for (int i = 7; i < 13; i++)
+            {
+                attack2.AddFrame(new AnimationFrame(new Rectangle(i * 64, 0, 64, 64)));
+            }
+            _animations.Add("Attack2", attack2);
+
+            var deathAnim = new Animation();
+            deathAnim.IsLooping = false;
+            deathAnim.FPS = 10;
+            for (int i = 0; i < 13; i++)
+            {
+                deathAnim.AddFrame(new AnimationFrame(new Rectangle(i * 64, 64, 64, 64)));
+            }
+            _animations.Add("Death", deathAnim);
 
             _currentAnimation = _animations["Idle"];
         }
