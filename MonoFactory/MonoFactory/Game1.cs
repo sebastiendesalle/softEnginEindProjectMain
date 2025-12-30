@@ -155,15 +155,15 @@ namespace MonoFactory
             }
             else if (levelIndex == 2)
             {
-                IGameObject chaser1 = _entityFactory.CreateEntity("Goblin_Chaser", GridHelper.GridToWorld(15, 2));
+                IGameObject patroller = _entityFactory.CreateEntity("Goblin_Patrol", GridHelper.GridToWorld(15, 2));
                 IGameObject chaser2 = _entityFactory.CreateEntity("Goblin_Chaser", GridHelper.GridToWorld(20, 10));
                 IGameObject turret = _entityFactory.CreateEntity("Goblin_Turret", GridHelper.GridToWorld(12, 12));
 
-                if (chaser1 is Enemy e1) e1.SetTarget(hero);
+                if (patroller is Enemy e1) e1.SetTarget(hero);
                 if (chaser2 is Enemy e2) e2.SetTarget(hero);
                 if (turret is Enemy e3) e3.SetTarget(hero);
 
-                world.AddEntity(chaser1);
+                world.AddEntity(patroller);
                 world.AddEntity(chaser2);
                 world.AddEntity(turret);
 
