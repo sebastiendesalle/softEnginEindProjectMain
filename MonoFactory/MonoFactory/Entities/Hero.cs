@@ -56,20 +56,18 @@ namespace MonoFactory.Entities
 
             // Idle (Row 1)
             var idleAnim = new Animation();
-            idleAnim.AddFrame(new AnimationFrame(new Rectangle(0, 0, 64, 64)));
-            idleAnim.AddFrame(new AnimationFrame(new Rectangle(64, 0, 64, 64)));
-            idleAnim.AddFrame(new AnimationFrame(new Rectangle(128, 0, 64, 64)));
-            idleAnim.AddFrame(new AnimationFrame(new Rectangle(192, 0, 64, 64)));
+            for (int i = 0; i < 4; i++)
+            {
+                idleAnim.AddFrame(new AnimationFrame(new Rectangle(i * 64, 0, 64, 64)));
+            }
             animations.Add("Idle", idleAnim);
 
             // Walk (Row 2)
             var walkAnim = new Animation();
-            walkAnim.AddFrame(new AnimationFrame(new Rectangle(0, 64, 64, 64)));
-            walkAnim.AddFrame(new AnimationFrame(new Rectangle(64, 64, 64, 64)));
-            walkAnim.AddFrame(new AnimationFrame(new Rectangle(128, 64, 64, 64)));
-            walkAnim.AddFrame(new AnimationFrame(new Rectangle(192, 64, 64, 64)));
-            walkAnim.AddFrame(new AnimationFrame(new Rectangle(256, 64, 64, 64)));
-            walkAnim.AddFrame(new AnimationFrame(new Rectangle(320, 64, 64, 64)));
+            for (int i = 0; i < 6; i++)
+            {
+                walkAnim.AddFrame(new AnimationFrame(new Rectangle(i * 64, 64, 64, 64)));
+            }
             animations.Add("Walk", walkAnim);
 
             // Jump (Rows 10 & 11)
