@@ -13,6 +13,7 @@ using MonoFactory.Strategies;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using MonoFactory.UI;
 
 namespace MonoFactory
 {
@@ -59,6 +60,8 @@ namespace MonoFactory
 
         private bool _showDebugHitboxes = false;
 
+        private Hud _hud;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -88,6 +91,9 @@ namespace MonoFactory
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _gameFont = Content.Load<SpriteFont>("GameFont");
+
+            _hud = new Hud(_gameFont, GraphicsDevice);
+
             _pixelTexture = new Texture2D(GraphicsDevice, 1, 1);
             _pixelTexture.SetData(new Color[] { Color.White });
 
@@ -323,6 +329,11 @@ namespace MonoFactory
                     }
                     spriteBatch.End();
                     spriteBatch.Begin();
+
+                    if (_hud != null)
+                    {
+                        _hud.Draw(spriteBatch, hero);
+                    }
                     break;
                 case GameState.GameOver:
                     GraphicsDevice.Clear(Color.Black);

@@ -13,6 +13,8 @@ namespace MonoFactory.Components
         private Dictionary<string, int> _slots = new Dictionary<string, int>();
         private int _maxCapacity;
 
+        public IReadOnlyDictionary<string, int> Items => _slots;
+
         public InventoryComponent(int capacity = 20)
         {
             _maxCapacity = capacity;

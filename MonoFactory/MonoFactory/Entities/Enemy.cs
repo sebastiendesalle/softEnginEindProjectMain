@@ -37,6 +37,8 @@ namespace MonoFactory.Entities
         private float _damageCooldown = 0f;
         private const float DamageDelay = 1.0f;
 
+        private const float AttackRange = 75.0f;
+
         public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy, WorldManager world)
         {
             _texture = texture;
@@ -143,22 +145,20 @@ namespace MonoFactory.Entities
             else
             {
                 float dist = Vector2.Distance(Position, _targetHero.Position);
-                if (_damageCooldown <= 0)
+                if (dist < AttackRange)
                 {
-                    Debug.WriteLine("Dealing damage to hero");
-                    _targetHero.TakeDamage(1);
-                    _damageCooldown = DamageDelay;
-                }
-                else
-                {
-                    Debug.WriteLine("Touching hero, but cooldown is active");
+                    if (_damageCooldown <= 0)
+                    {
+                        Debug.WriteLine($"Dealing damage to hero. Dist: {dist}");
+                        _targetHero.TakeDamage(1);
+                        _damageCooldown = DamageDelay;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("In range, but cooldown active");
+                    }
                 }
             }
-
-            //if (_targetHero != null && Rectangle.Intersects(_targetHero.Rectangle))
-            //{
-                
-            //}
         }
 
         public void Draw(SpriteBatch spriteBatch)
