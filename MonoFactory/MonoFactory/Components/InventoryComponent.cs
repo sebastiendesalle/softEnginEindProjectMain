@@ -49,6 +49,15 @@ namespace MonoFactory.Components
             return _slots.ContainsKey(itemName) && _slots[itemName] >= amount;
         }
 
+        public bool HasItem(IItem item, int amount)
+        {
+            if (item == null)
+            {
+                return false;
+            }
+            return HasItem(item.Name, amount);
+        }
+
         public void RemoveItem(string itemName, int amount)
         {
             if (HasItem(itemName, amount))
@@ -59,6 +68,14 @@ namespace MonoFactory.Components
                     _slots.Remove(itemName);
                 }
                 Debug.WriteLine($"[Inventory] Removed {amount} {itemName}. Remaining: {_slots[itemName]}");
+            }
+        }
+
+        public void RemoveItem(IItem item, int amount)
+        {
+            if (item != null)
+            {
+                RemoveItem(item.Name, amount);
             }
         }
 
