@@ -11,32 +11,43 @@ namespace MonoFactory.Entities.Machines.States
 {
     public class FinishedState: IMachineState
     {
+
+        private Texture2D _pixel;
         public void Enter(Machine machine)
         {
-            
+            Debug.WriteLine("Machine finished processing");
         }
 
         public void Interact(Hero hero, Machine machine)
         {
-            bool added = hero.Inventory.AddItem(machine.OutputItem, 1);
-
-            if (added)
+            if (hero.Inventory.AddItem(machine.OutputItem, 1))
             {
-                Debug.WriteLine("machine crafted item collected");
+                Debug.WriteLine($"Collected: {machine.OutputItem.Name}");
 
                 machine.SetState(new EmptyState());
             }
             else
             {
-                Debug.WriteLine("machine inventory full");
+                Debug.WriteLine("Inventory full, can't collect");
             }
         }
 
-        public void Update(GameTime gameTime, Machine machine) { }
+        public void Update(GameTime gameTime, Machine machine) 
+        { 
+        
+        }
 
         public void Draw(SpriteBatch spriteBatch, Machine machine)
         {
-            spriteBatch.Draw(machine.Texture, machine.Rectangle, Color.Green);
+            if (_pixel == null)
+            {
+                _pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+                _pixel.SetData(new[] { Color.White });
+            }
+
+            int indSize = 10;
+            Vector2 indPos = machine.Position + new Vector2((machine.Rectangle.Width - indSize) / 2, -15);
+            spriteBatch.Draw(_pixel, new Rectangle((int)indPos.X, (int)indPos.Y, indSize, indSize), Color.Green);
         }
     }
 }

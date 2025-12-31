@@ -15,7 +15,7 @@ namespace MonoFactory.Entities.Machines
         // state pattern
         public IMachineState CurrentState { get; private set; }
 
-        public string InputItemName { get; } = "stone";
+        public string InputItemName { get; } = "Iron Ore";
         public IItem OutputItem { get; } = new ResourceItem("Iron Bar");
         public float ProcessTime { get; } = 3.0f;
 
@@ -44,6 +44,8 @@ namespace MonoFactory.Entities.Machines
 
         public void Draw(SpriteBatch spriteBatch)
         {
+
+            spriteBatch.Draw(Texture, Position, Color.White);
             CurrentState.Draw(spriteBatch, this);
         }
 
