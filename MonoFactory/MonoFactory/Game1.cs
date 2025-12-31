@@ -145,7 +145,7 @@ namespace MonoFactory
                 new Enemy(tex, pos, new StationaryStrategy(), world));
 
             _entityFactory.RegisterCreator("Furnace", (pos, tex) =>
-                new Machine(tex, pos));
+                new Machine(tex, pos, world, _factorySheet));
         }
 
         private void LoadLevel(int levelIndex)
@@ -220,9 +220,7 @@ namespace MonoFactory
                     bool isIron = _random.Next(2) == 0;
                     string name = isIron ? "Iron Ore" : "Stick";
 
-                    Texture2D itemTex;
                     Rectangle sourceRect;
-                    // TODO: placeholders till texture slicing is fixed
                     if (isIron)
                     {
                         sourceRect = new Rectangle(2 * 32, 0 * 32, 32, 32);

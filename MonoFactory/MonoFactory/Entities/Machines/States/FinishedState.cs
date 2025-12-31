@@ -13,24 +13,33 @@ namespace MonoFactory.Entities.Machines.States
     {
 
         private Texture2D _pixel;
+        private bool _itemSpawned = false;
         public void Enter(Machine machine)
         {
             Debug.WriteLine("Machine finished processing");
             machine.SourceRect = new Rectangle(0, 412, 64, 100);
+
+            if (!_itemSpawned)
+            {
+                Vector2 spawnPos = machine.Position + new Vector2(machine.Rectangle.Width + 20, 0);
+                DroppedItem droppedItem = new DroppedItem(
+                    machine.OutputItem,
+                    spawnPos,
+                    machine.ItemTexture,
+                    machine.OutputItemSourceRect
+                );
+
+                machine.World.AddEntity(droppedItem);
+                Debug.WriteLine($"Spawned {machine.OutputItem.Name} at {spawnPos}");
+                _itemSpawned = true;
+
+                machine.SetState(new EmptyState());
+            }
         }
 
         public void Interact(Hero hero, Machine machine)
         {
-            if (hero.Inventory.AddItem(machine.OutputItem, 1))
-            {
-                Debug.WriteLine($"Collected: {machine.OutputItem.Name}");
-
-                machine.SetState(new EmptyState());
-            }
-            else
-            {
-                Debug.WriteLine("Inventory full, can't collect");
-            }
+            Debug.WriteLine("Machine empty");
         }
 
         public void Update(GameTime gameTime, Machine machine) 
