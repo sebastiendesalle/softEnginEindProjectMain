@@ -21,12 +21,16 @@ namespace MonoFactory.Entities.Machines
 
         private int _width = 64;
         private int _height = 64;
+
+        public Rectangle SourceRect { get; set; }
         public Rectangle Rectangle => new Rectangle((int)Position.X, (int)Position.Y, _width, _height);
 
         public Machine(Texture2D texture, Vector2 position)
         {
             Texture = texture;
             Position = position;
+
+            SourceRect = new Rectangle(0, 412, 64, 100);
 
             SetState(new EmptyState());
         }
@@ -45,7 +49,7 @@ namespace MonoFactory.Entities.Machines
         public void Draw(SpriteBatch spriteBatch)
         {
 
-            spriteBatch.Draw(Texture, Position, Color.White);
+            spriteBatch.Draw(Texture, Position, SourceRect, Color.White);
             CurrentState.Draw(spriteBatch, this);
         }
 

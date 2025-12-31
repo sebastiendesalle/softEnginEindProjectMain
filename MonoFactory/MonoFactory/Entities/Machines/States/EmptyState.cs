@@ -14,6 +14,7 @@ namespace MonoFactory.Entities.Machines.States
         public void Enter(Machine machine) 
         {
             Debug.WriteLine("Machine ready for input");
+            machine.SourceRect = new Rectangle(0, 412, 64, 100);
         }
 
         public void Interact(Hero hero, Machine machine)
@@ -21,7 +22,6 @@ namespace MonoFactory.Entities.Machines.States
             if (hero.Inventory.HasItem(machine.InputItemName, 1))
             {
                 hero.Inventory.RemoveItem(machine.InputItemName, 1);
-                Debug.WriteLine($"Processing {machine.InputItemName}");
 
                 machine.SetState(new ProcessingState(machine.ProcessTime));
             }
@@ -38,7 +38,7 @@ namespace MonoFactory.Entities.Machines.States
 
         public void Draw(SpriteBatch spriteBatch, Machine machine)
         {
-            spriteBatch.Draw(machine.Texture, machine.Rectangle, Color.Gray);
+            //spriteBatch.Draw(machine.Texture, machine.Rectangle, Color.Gray);
         }
     }
 }

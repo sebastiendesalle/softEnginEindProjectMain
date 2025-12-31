@@ -15,6 +15,11 @@ namespace MonoFactory.Entities.Machines.States
         private float _totalTime;
         private Texture2D _pixel;
 
+        private float _animTimer;
+        private int _currentFrameIndex;
+
+        private readonly int[] _frameXOffsets = { 64, 128, 192 };
+
         public ProcessingState(float duration)
         {
             _totalTime = duration;
@@ -23,7 +28,8 @@ namespace MonoFactory.Entities.Machines.States
 
         public void Enter(Machine machine)
         {
-            _timer = 0f;
+            _currentFrameIndex = 0;
+            UpdateAnimation(machine);
         }
 
         public void Interact(Hero hero, Machine machine)
@@ -34,12 +40,27 @@ namespace MonoFactory.Entities.Machines.States
         public void Update(GameTime gameTime, Machine machine)
         {
             var delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            _timer += delta;
+            _timer -= delta;
+
+            _animTimer += delta;
+            if (_animTimer > 0.2f)
+            {
+                _animTimer = 0;
+                _currentFrameIndex = (_currentFrameIndex + 1) % _frameXOffsets.Length;
+                UpdateAnimation(machine);
+            }
 
             if (_timer <= 0)
             {
                 machine.SetState(new FinishedState());
             }
+        }
+
+        public void UpdateAnimation(Machine machine)
+        {
+            int x = _frameXOffsets[_currentFrameIndex];
+
+            machine.SourceRect = new Rectangle(x, 412, 64, 100);
         }
 
         public void Draw(SpriteBatch spriteBatch, Machine machine)

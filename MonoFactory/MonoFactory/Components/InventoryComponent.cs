@@ -63,11 +63,12 @@ namespace MonoFactory.Components
             if (HasItem(itemName, amount))
             {
                 _slots[itemName] -= amount;
+                int remaining = _slots[itemName];
                 if (_slots[itemName] <= 0)
                 {
                     _slots.Remove(itemName);
                 }
-                Debug.WriteLine($"[Inventory] Removed {amount} {itemName}. Remaining: {_slots[itemName]}");
+                Debug.WriteLine($"[Inventory] Removed {amount} {itemName}. Remaining: {remaining}");
             }
         }
 

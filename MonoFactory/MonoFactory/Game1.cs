@@ -128,8 +128,6 @@ namespace MonoFactory
             _entityFactory.RegisterTexture("Goblin_Turret", enemyTexture);
             _entityFactory.RegisterTexture("Furnace", _factorySheet);
 
-            //TODO: find Furnace texture
-            _entityFactory.RegisterTexture("Furnace", chestTexture);
 
             _entityFactory.RegisterCreator("Chest", (pos, tex) =>
                 new Chest(tex, pos));
@@ -223,18 +221,18 @@ namespace MonoFactory
                     string name = isIron ? "Iron Ore" : "Stick";
 
                     Texture2D itemTex;
-
+                    Rectangle sourceRect;
                     // TODO: placeholders till texture slicing is fixed
                     if (isIron)
                     {
-                        itemTex = _pixelTexture;
+                        sourceRect = new Rectangle(2 * 32, 0 * 32, 32, 32);
                     }
                     else
                     {
-                        itemTex = _pixelTexture;
+                        sourceRect = new Rectangle(4 * 32, 11 * 32, 32, 32);
                     }
 
-                    world.AddEntity(new DroppedItem(new ResourceItem(name), spawnPos, _factorySheet));
+                    world.AddEntity(new DroppedItem(new ResourceItem(name), spawnPos, _factorySheet, sourceRect));
                 }
             }
         }

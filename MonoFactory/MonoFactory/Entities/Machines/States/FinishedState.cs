@@ -16,6 +16,7 @@ namespace MonoFactory.Entities.Machines.States
         public void Enter(Machine machine)
         {
             Debug.WriteLine("Machine finished processing");
+            machine.SourceRect = new Rectangle(0, 412, 64, 100);
         }
 
         public void Interact(Hero hero, Machine machine)
