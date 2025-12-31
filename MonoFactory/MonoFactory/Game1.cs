@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using MonoFactory.UI;
+using System;
 
 namespace MonoFactory
 {
@@ -36,6 +37,8 @@ namespace MonoFactory
 
         private Texture2D _heroTexture;
         private Texture2D _pixelTexture;
+
+        private Texture2D _factorySheet;
 
         private Hero hero;
         private WorldManager world;
@@ -62,6 +65,8 @@ namespace MonoFactory
 
         private Hud _hud;
 
+        private Random _random;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -75,6 +80,8 @@ namespace MonoFactory
             IsMouseVisible = true;
 
             Content.RootDirectory = "Content";
+
+            _random = new Random();
         }
 
         protected override void Initialize()
@@ -106,6 +113,8 @@ namespace MonoFactory
             Texture2D enemyTexture = Content.Load<Texture2D>("Skeleton enemy");
             Texture2D chestTexture = Content.Load<Texture2D>("chest");
 
+            _factorySheet = Content.Load<Texture2D>("ore");
+
 
             // init world
             world = new WorldManager(grassTexture);
@@ -117,6 +126,7 @@ namespace MonoFactory
             _entityFactory.RegisterTexture("Goblin_Chaser", enemyTexture);
             _entityFactory.RegisterTexture("Goblin_Patrol", enemyTexture);
             _entityFactory.RegisterTexture("Goblin_Turret", enemyTexture);
+            _entityFactory.RegisterTexture("Furnace", _factorySheet);
 
             //TODO: find Furnace texture
             _entityFactory.RegisterTexture("Furnace", chestTexture);
@@ -153,6 +163,7 @@ namespace MonoFactory
 
             var inputReader = new KeyboardReader();
 
+            Vector2 startPos = GridHelper.GridToWorld(5, 5);
             hero = new Hero(_heroTexture, inputReader, GridHelper.GridToWorld(5, 5), world, scale: 2f);
             world.AddEntity(hero);
 
@@ -161,11 +172,7 @@ namespace MonoFactory
                 world.AddEntity(_entityFactory.CreateEntity("Chest", GridHelper.GridToWorld(8, 8)));
                 world.AddEntity(_entityFactory.CreateEntity("Furnace", GridHelper.GridToWorld(14, 10)));
 
-                IGameObject patroller = _entityFactory.CreateEntity("Goblin_Patrol", GridHelper.GridToWorld(10, 5));
-                if (patroller is Enemy e) e.SetTarget(hero);
-                world.AddEntity(patroller);
-
-                hero.Inventory.AddItem(new ResourceItem("Stone"), 5);
+                SpawnRandomItems(10);
             }
             else if (levelIndex == 2)
             {
@@ -182,6 +189,53 @@ namespace MonoFactory
                 world.AddEntity(turret);
 
                 world.AddEntity(_entityFactory.CreateEntity("Chest", GridHelper.GridToWorld(22, 10)));
+            }
+        }
+
+        private void SpawnRandomItems(int count)
+        {
+            float safeRadius = 500f;
+
+            for (int i = 0; i < count; i++)
+            {
+                Vector2 spawnPos;
+                bool valid = false;
+                int attempts = 0;
+
+                do
+                {
+                    float x = (float)_random.NextDouble() * 2000;
+                    float y = (float)_random.NextDouble() * 1500;
+                    spawnPos = new Vector2(x, y);
+
+                    float dist = Vector2.Distance(spawnPos, hero.Position);
+                    if (dist > safeRadius)
+                    {
+                        valid = true;
+                    }
+                    attempts++;
+                }
+                while (!valid && attempts < 10);
+
+                if (valid)
+                {
+                    bool isIron = _random.Next(2) == 0;
+                    string name = isIron ? "Iron Ore" : "Stick";
+
+                    Texture2D itemTex;
+
+                    // TODO: placeholders till texture slicing is fixed
+                    if (isIron)
+                    {
+                        itemTex = _pixelTexture;
+                    }
+                    else
+                    {
+                        itemTex = _pixelTexture;
+                    }
+
+                    world.AddEntity(new DroppedItem(new ResourceItem(name), spawnPos, _factorySheet));
+                }
             }
         }
 
@@ -270,7 +324,7 @@ namespace MonoFactory
 
         private void CheckLevelTransition()
         {
-            if (hero.Position.X > 1000)
+            if (hero.Position.X > 2000)
             {
                 if (_currentLevelIndex == 1)
                 {
