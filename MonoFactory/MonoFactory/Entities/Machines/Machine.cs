@@ -32,7 +32,6 @@ namespace MonoFactory.Entities.Machines
         public Texture2D ItemTexture { get; private set; }
         public Rectangle OutputItemSourceRect { get; private set; }
 
-
         public Machine(Texture2D texture, Vector2 position, WorldManager world, Texture2D itemTexture)
         {
             Texture = texture;
