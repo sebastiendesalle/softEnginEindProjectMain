@@ -21,15 +21,18 @@ namespace MonoFactory.Entities
         private float _bobTimer;
         private float _baseY;
 
-        public Rectangle Rectangle => new Rectangle((int)Position.X, (int)Position.Y, _sourceRect.Width, _sourceRect.Height);
+        private float _scale;
 
-        public DroppedItem(IItem item, Vector2 position, Texture2D texture, Rectangle sourceRect)
+        public Rectangle Rectangle => new Rectangle((int)Position.X, (int)Position.Y, (int)(_sourceRect.Width * _scale), (int)(_sourceRect.Height * _scale));
+
+        public DroppedItem(IItem item, Vector2 position, Texture2D texture, Rectangle sourceRect, float scale)
         {
             Item = item;
             Position = position;
             _baseY = position.Y;
             _texture = texture;
             _sourceRect = sourceRect;
+            _scale = scale;
         }
 
         public void Update(GameTime gameTime)
@@ -43,7 +46,7 @@ namespace MonoFactory.Entities
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, Position, _sourceRect, Color.White);
+            spriteBatch.Draw(_texture, Position, _sourceRect, Color.White, 0f, Vector2.Zero, _scale, SpriteEffects.None, 1f);
         }
 
         public void Interact(Hero hero)

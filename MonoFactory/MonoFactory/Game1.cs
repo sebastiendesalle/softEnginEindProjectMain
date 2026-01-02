@@ -114,6 +114,7 @@ namespace MonoFactory
             Texture2D chestTexture = Content.Load<Texture2D>("chest");
 
             _factorySheet = Content.Load<Texture2D>("ore");
+            Texture2D stickTexture = Content.Load<Texture2D>("stick");
 
 
             // init world
@@ -193,6 +194,7 @@ namespace MonoFactory
         private void SpawnRandomItems(int count)
         {
             float safeRadius = 500f;
+            Texture2D stickTexture = Content.Load<Texture2D>("stick");
 
             for (int i = 0; i < count; i++)
             {
@@ -220,17 +222,23 @@ namespace MonoFactory
                     bool isIron = _random.Next(2) == 0;
                     string name = isIron ? "Iron Ore" : "Stick";
 
+                    Texture2D itemTex;
                     Rectangle sourceRect;
+                    float scale;
                     if (isIron)
                     {
+                        itemTex = _factorySheet;
                         sourceRect = new Rectangle(2 * 32, 0 * 32, 32, 32);
+                        scale = 1f;
                     }
                     else
                     {
-                        sourceRect = new Rectangle(4 * 32, 11 * 32, 32, 32);
+                        itemTex = stickTexture;
+                        sourceRect = new Rectangle(0,0,350,350);
+                        scale = 64 / 350f;
                     }
 
-                    world.AddEntity(new DroppedItem(new ResourceItem(name), spawnPos, _factorySheet, sourceRect));
+                    world.AddEntity(new DroppedItem(new ResourceItem(name), spawnPos, itemTex, sourceRect, scale));
                 }
             }
         }

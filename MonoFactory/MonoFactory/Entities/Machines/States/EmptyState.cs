@@ -38,7 +38,7 @@ namespace MonoFactory.Entities.Machines.States
 
         public void Draw(SpriteBatch spriteBatch, Machine machine)
         {
-            //spriteBatch.Draw(machine.Texture, machine.Rectangle, Color.Gray);
+
         }
     }
 }

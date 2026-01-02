@@ -22,13 +22,16 @@ namespace MonoFactory.Entities.Machines
         public float ProcessTime { get; } = 3.0f;
 
         private int _width = 64;
-        private int _height = 64;
+        private int _height = 100;
+
+        public float Scale { get; private set; } = 2.0f;
 
         public Rectangle SourceRect { get; set; }
-        public Rectangle Rectangle => new Rectangle((int)Position.X, (int)Position.Y, _width, _height);
+        public Rectangle Rectangle => new Rectangle((int)Position.X, (int)Position.Y, (int)(_width * Scale), (int)(_height* Scale));
 
         public Texture2D ItemTexture { get; private set; }
         public Rectangle OutputItemSourceRect { get; private set; }
+
 
         public Machine(Texture2D texture, Vector2 position, WorldManager world, Texture2D itemTexture)
         {
@@ -58,7 +61,7 @@ namespace MonoFactory.Entities.Machines
         public void Draw(SpriteBatch spriteBatch)
         {
 
-            spriteBatch.Draw(Texture, Position, SourceRect, Color.White);
+            spriteBatch.Draw(Texture, Position, SourceRect, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 1f);
             CurrentState.Draw(spriteBatch, this);
         }
 

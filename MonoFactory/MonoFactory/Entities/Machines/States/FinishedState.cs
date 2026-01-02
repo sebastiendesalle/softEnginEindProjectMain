@@ -21,12 +21,13 @@ namespace MonoFactory.Entities.Machines.States
 
             if (!_itemSpawned)
             {
-                Vector2 spawnPos = machine.Position + new Vector2(machine.Rectangle.Width + 20, 0);
+                Vector2 spawnPos = machine.Position + new Vector2(machine.Rectangle.Width + 0, 20);
                 DroppedItem droppedItem = new DroppedItem(
                     machine.OutputItem,
                     spawnPos,
                     machine.ItemTexture,
-                    machine.OutputItemSourceRect
+                    machine.OutputItemSourceRect,
+                    1f
                 );
 
                 machine.World.AddEntity(droppedItem);
