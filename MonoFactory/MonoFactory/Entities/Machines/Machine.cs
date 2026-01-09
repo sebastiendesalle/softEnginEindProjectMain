@@ -17,7 +17,7 @@ namespace MonoFactory.Entities.Machines
         // state pattern
         public IMachineState CurrentState { get; private set; }
 
-        public string InputItemName { get; } = "Iron Ore";
+        public string InputItemName { get; } = "Iron Ore_1";
         public IItem OutputItem { get; } = new ResourceItem("Iron Bar");
         public float ProcessTime { get; } = 3.0f;
 
