@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoFactory.Entities.Machines.States.Furnace;
+using MonoFactory.Entities.Machines.States;
 using System.Diagnostics;
 using MonoFactory.Items;
 
@@ -12,16 +12,18 @@ namespace MonoFactory.Entities.Machines.States
         private float _timer;
         private float _totalTime;
         private Texture2D _pixel;
+        private IItem _resultItem;
 
         private float _animTimer;
         private int _currentFrameIndex;
 
         private readonly int[] _frameXOffsets = { 64, 128, 192 };
 
-        public ProcessingState(float duration)
+        public ProcessingState(float duration, IItem resultItem)
         {
             _totalTime = duration;
             _timer = duration;
+            _resultItem = resultItem;
         }
 
         public void Enter(Machine machine)
@@ -50,7 +52,7 @@ namespace MonoFactory.Entities.Machines.States
 
             if (_timer <= 0)
             {
-                machine.SetState(new FinishedState());
+                machine.SetState(new FinishedState(_resultItem));
             }
         }
 

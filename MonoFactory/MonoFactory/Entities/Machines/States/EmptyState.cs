@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoFactory.Entities.Machines.States.Furnace
+namespace MonoFactory.Entities.Machines.States
 {
     public class EmptyState: IMachineState
     {
@@ -23,7 +23,7 @@ namespace MonoFactory.Entities.Machines.States.Furnace
             {
                 hero.Inventory.RemoveItem(machine.InputItemName, 1);
 
-                machine.SetState(new ProcessingState(machine.ProcessTime));
+                machine.SetState(new ProcessingState(machine.ProcessTime, machine.OutputItem));
             }
             else
             {

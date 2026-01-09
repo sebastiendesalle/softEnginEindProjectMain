@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoFactory.Entities.Machines.States;
+using MonoFactory.Items;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,13 +9,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoFactory.Entities.Machines.States.Furnace
+namespace MonoFactory.Entities.Machines.States
 {
     public class FinishedState: IMachineState
     {
 
         private Texture2D _pixel;
         private bool _itemSpawned = false;
+        private IItem _outputItem;
+
+        public FinishedState(IItem outputItem)
+        {
+            _outputItem = outputItem;
+        }
         public void Enter(Machine machine)
         {
             Debug.WriteLine("Machine finished processing");
@@ -21,21 +29,33 @@ namespace MonoFactory.Entities.Machines.States.Furnace
 
             if (!_itemSpawned)
             {
-                Vector2 spawnPos = machine.Position + new Vector2(machine.Rectangle.Width + 0, 20);
-                DroppedItem droppedItem = new DroppedItem(
-                    machine.OutputItem,
-                    spawnPos,
-                    machine.ItemTexture,
-                    machine.OutputItemSourceRect,
-                    1f
-                );
-
-                machine.World.AddEntity(droppedItem);
-                Debug.WriteLine($"Spawned {machine.OutputItem.Name} at {spawnPos}");
+                SpawnOutput(machine);
                 _itemSpawned = true;
 
-                machine.SetState(new EmptyState());
+                machine.SetState(new WaitingForInputState());
             }
+        }
+
+        private void SpawnOutput(Machine machine)
+        {
+            Vector2 spawnPos = machine.Position + new Vector2(machine.Rectangle.Width + 0, 20);
+
+            Rectangle sourceRect = machine.OutputItemSourceRect;
+            if (_outputItem is WeaponItem)
+            {
+
+            }
+
+            DroppedItem droppedItem = new DroppedItem(
+                _outputItem,
+                spawnPos,
+                machine.ItemTexture,
+                sourceRect,
+                1f
+                );
+
+            machine.World.AddEntity(droppedItem);
+            Debug.WriteLine($"Spawned {_outputItem.Name} (Lvl {_outputItem.Level}) at {spawnPos}");
         }
 
         public void Interact(Hero hero, Machine machine)

@@ -4,7 +4,10 @@ using MonoFactory.Entities.Interfaces;
 using MonoFactory.Entities.Machines.States;
 using MonoFactory.Items;
 using MonoFactory.Managers;
+using MonoFactory.Components;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoFactory.Entities.Machines
 {
@@ -16,6 +19,9 @@ namespace MonoFactory.Entities.Machines
 
         // state pattern
         public IMachineState CurrentState { get; private set; }
+
+        private List<IItem> _inputBuffer = new List<IItem>();
+        private List<Recipe> _recipes = new List<Recipe>();
 
         public string InputItemName { get; } = "Iron Ore_1";
         public IItem OutputItem { get; } = new ResourceItem("Iron Bar");
@@ -43,13 +49,54 @@ namespace MonoFactory.Entities.Machines
 
             SourceRect = new Rectangle(0, 412, 64, 100);
 
-            SetState(new EmptyState());
+            SetState(new WaitingForInputState());
+        }
+
+        private void InitializeRecipes()
+        {
+            var swordRecipe = new Recipe(
+                new List<String> { "Stick_1", "Iron Ore_1", "Iron Ore_1" },
+                new WeaponItem("Iron Sword", 1, 2)
+            );
+            _recipes.Add(swordRecipe);
+
+            var upgradeRecipe = new Recipe(
+            new List<String> { "Iron Sword_1", "Iron Sword_1" },
+            new WeaponItem("Iron Sword", 2, 4)
+            );
+            _recipes.Add(upgradeRecipe);
         }
 
         public void SetState(IMachineState newState)
         {
             CurrentState = newState;
             CurrentState.Enter(this);
+        }
+
+        public void AddToBuffer(IItem item)
+        {
+            _inputBuffer.Add(item);
+        }
+
+        public bool IsIngredient(string itemId)
+        {
+            return _recipes.Any(r => r.Ingredients.Contains(itemId));
+        }
+
+        public bool TryCraft()
+        {
+            List<String> bufferIds = _inputBuffer.Select(i => i.GetId()).ToList();
+
+            foreach (var recipe in _recipes)
+            {
+                if (recipe.Matches(bufferIds))
+                {
+                    _inputBuffer.Clear();
+                    SetState(new ProcessingState(ProcessTime, recipe.Result));
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void Update(GameTime gameTime)
