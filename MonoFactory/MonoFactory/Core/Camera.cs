@@ -23,8 +23,8 @@ namespace MonoFactory.Core
 
             // offset to center of screen
             var offset = Matrix.CreateTranslation(
-                viewportWidth / 2f,
-                viewportHeight / 2f,
+                viewportWidth / 1.5f,
+                viewportHeight,
                 0);
 
             Transform = position * offset;
