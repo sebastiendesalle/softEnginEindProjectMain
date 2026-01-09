@@ -171,7 +171,7 @@ namespace MonoFactory
                 world.AddEntity(_entityFactory.CreateEntity("Chest", GridHelper.GridToWorld(8, 8)));
                 world.AddEntity(_entityFactory.CreateEntity("Furnace", GridHelper.GridToWorld(14, 10)));
 
-                SpawnRandomItems(10);
+                SpawnRandomItems(50);
             }
             else if (levelIndex == 2)
             {
@@ -204,9 +204,11 @@ namespace MonoFactory
 
                 do
                 {
-                    float x = (float)_random.NextDouble() * 2000;
-                    float y = (float)_random.NextDouble() * 1500;
-                    spawnPos = new Vector2(x, y);
+                    float angle = (float)(_random.NextDouble() * Math.PI * 2);
+                    float distance = (float)(_random.NextDouble() * 1000) + safeRadius;
+
+                    Vector2 offset = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * distance;
+                    spawnPos = hero.Position + offset;
 
                     float dist = Vector2.Distance(spawnPos, hero.Position);
                     if (dist > safeRadius)
