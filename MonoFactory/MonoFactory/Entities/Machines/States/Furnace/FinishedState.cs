@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoFactory.Entities.Machines.States
+namespace MonoFactory.Entities.Machines.States.Furnace
 {
     public class FinishedState: IMachineState
     {

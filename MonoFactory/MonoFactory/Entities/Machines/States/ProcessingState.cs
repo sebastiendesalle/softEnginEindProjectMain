@@ -1,11 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
+using MonoFactory.Entities.Machines.States.Furnace;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MonoFactory.Items;
+
 
 namespace MonoFactory.Entities.Machines.States
 {
@@ -71,7 +69,7 @@ namespace MonoFactory.Entities.Machines.States
                 _pixel.SetData(new[] { Color.White });
             }
 
-            float progress = 1.0f - (_timer / _totalTime);
+            float progress = 1.0f - _timer / _totalTime;
             int barWidth = 50;
             int fillWidth = (int)(barWidth * progress);
 
