@@ -37,16 +37,18 @@ namespace MonoFactory.Entities.Machines
         public Rectangle Rectangle => new Rectangle((int)Position.X, (int)Position.Y, (int)(_width * Scale), (int)(_height* Scale));
 
         public Texture2D ItemTexture { get; private set; }
+        public Texture2D SwordTexture { get; private set; }
         public Rectangle OutputItemSourceRect { get; private set; }
 
         private string _machineType;
 
-        public Machine(Texture2D texture, Vector2 position, WorldManager world, Texture2D itemTexture, string machineType)
+        public Machine(Texture2D texture, Vector2 position, WorldManager world, Texture2D itemTexture, string machineType, Texture2D swordTexture)
         {
             Texture = texture;
             Position = position;
             World = world;
             ItemTexture = itemTexture;
+            SwordTexture = swordTexture;
             _machineType = machineType;
 
             OutputItemSourceRect = new Rectangle(4 * 32, 11 * 32, 32, 32);
@@ -56,6 +58,23 @@ namespace MonoFactory.Entities.Machines
             InitializeRecipes();
             SetState(new WaitingForInputState());
 
+        }
+
+        public (Texture2D texture, Rectangle sourceRect, float scale) GetItemVisuals(IItem item)
+        {
+            if (item is WeaponItem weapon)
+            {
+                int spriteSize = 128;
+                int column = Math.Min(weapon.Level - 1, 3);
+                int row = 4;
+
+                Rectangle sourceRect = new Rectangle(column * spriteSize, row * spriteSize, spriteSize, spriteSize);
+                return (SwordTexture, sourceRect, 32f / spriteSize);
+            }
+            else
+            {
+                return (ItemTexture, OutputItemSourceRect, 32f / 350f);
+            }
         }
 
         private void InitializeRecipes()

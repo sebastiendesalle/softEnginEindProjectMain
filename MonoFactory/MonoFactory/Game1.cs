@@ -115,6 +115,8 @@ namespace MonoFactory
 
             _factorySheet = Content.Load<Texture2D>("ore");
             Texture2D stickTexture = Content.Load<Texture2D>("stick");
+            Texture2D swordTexture = Content.Load<Texture2D>("swords");
+            Texture2D ironBarTexture = Content.Load<Texture2D>("ore");
 
 
             // init world
@@ -147,10 +149,10 @@ namespace MonoFactory
                 new Enemy(tex, pos, new StationaryStrategy(), world));
 
             _entityFactory.RegisterCreator("Furnace", (pos, tex) =>
-                new Machine(tex, pos, world, _factorySheet, "Furnace"));
+                new Machine(tex, pos, world, _factorySheet, "Furnace", ironBarTexture));
 
             _entityFactory.RegisterCreator("Anvil", (pos, tex) =>
-                new Machine(tex, pos, world, _factorySheet, "Anvil"));
+                new Machine(tex, pos, world, _factorySheet, "Anvil", swordTexture));
         }
 
         private void LoadLevel(int levelIndex)

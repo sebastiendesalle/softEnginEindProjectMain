@@ -40,16 +40,13 @@ namespace MonoFactory.Entities.Machines.States
         {
             Vector2 spawnPos = machine.Position + new Vector2(machine.Rectangle.Width + 0, 20);
 
-            Rectangle sourceRect = machine.OutputItemSourceRect;
-            if (_outputItem is WeaponItem)
-            {
-
-            }
+            var (texture, sourceRect, Scale) = machine.GetItemVisuals(_outputItem);
+            
 
             DroppedItem droppedItem = new DroppedItem(
                 _outputItem,
                 spawnPos,
-                machine.ItemTexture,
+                texture,
                 sourceRect,
                 1f
                 );
