@@ -94,14 +94,25 @@ namespace MonoFactory.Entities.Machines
                 var swordRecipe = new Recipe(
                 new List<String> { "Stick_1", "Iron Bar_1", "Iron Bar_1" },
                 new WeaponItem("Iron Sword", 1, 2)
-);
+                );
                 _recipes.Add(swordRecipe);
 
-                var upgradeRecipe = new Recipe(
+                var upgrade2Recipe = new Recipe(
                 new List<String> { "Iron Sword_1", "Iron Sword_1" },
                 new WeaponItem("Iron Sword", 2, 4)
                 );
-                _recipes.Add(upgradeRecipe);
+                _recipes.Add(upgrade2Recipe);
+
+                var upgrade3Recipe = new Recipe(
+                   new List<String> { "Iron Sword_2", "Iron Sword_2" },
+                new WeaponItem("Iron Sword", 3, 6)
+                );
+
+                var upgrade4Recipe = new Recipe(
+                   new List<String> { "Iron Sword_2", "Iron Sword_2" },
+                new WeaponItem("Iron Sword", 3, 10)
+                );
+                _recipes.Add(upgrade4Recipe);
                 Debug.WriteLine(" Initialized Anvil recipes.");
             }
 
