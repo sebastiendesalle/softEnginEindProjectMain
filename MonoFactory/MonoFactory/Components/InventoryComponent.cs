@@ -34,7 +34,7 @@ namespace MonoFactory.Components
             }
             string id = item.GetId();
 
-            if (!_slots.ContainsKey(item.Name) && _slots.Count >= _maxCapacity)
+            if (!_slots.ContainsKey(id) && _slots.Count >= _maxCapacity)
             {
                 Debug.WriteLine("Inventory full");
                 return false;

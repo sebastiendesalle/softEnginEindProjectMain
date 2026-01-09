@@ -19,23 +19,44 @@ namespace MonoFactory.Entities.Machines.States
 
         public void Interact(Hero hero, Machine machine)
         {
+            if (hero.Inventory.Items.Count == 0)
+            {
+                Debug.WriteLine("Hero inventory is empty.");
+                return;
+            }
+
+            var buffer = machine.GetBuffer();
+            List<string> bufferIds = buffer.Select(i => i.GetId()).ToList();
+
             foreach (var entry in hero.Inventory.Items)
             {
                 var item = entry.Value.Item;
-                if (machine.IsIngredient(item.GetId()))
-                {
-                    hero.Inventory.RemoveItem(item, 1);
-                    machine.AddToBuffer(item);
-                    Debug.WriteLine($"Added {item.Name} to machine");
+                string itemId = item.GetId();
 
-                    if (machine.TryCraft())
+                Debug.WriteLine($"Checking inventory item {itemId}");
+
+                if (machine.IsIngredient(itemId))
+                {
+                    List<string> testBuffer = new List<string>(bufferIds);
+                    testBuffer.Add(itemId);
+
+                    if (machine.CouldMatchRecipe(testBuffer))
                     {
+                        hero.Inventory.RemoveItem(item, 1);
+                        machine.AddToBuffer(item);
+                        Debug.WriteLine($"Added {item.Name} to machine buffer");
+                        Debug.WriteLine($"[Machine] Buffer now contains: {string.Join(", ", machine.GetBuffer().Select(i => i.GetId()))}");
+
+                        if (machine.TryCraft())
+                        {
+                            Debug.WriteLine("Recipe matched! Crafting started.");
+                            return;
+                        }
                         return;
                     }
-                    return;
+
                 }
             }
-            Debug.WriteLine("No valid ingredients found in inventory");
         }
 
         public void Update(GameTime gameTime, Machine machine) { }

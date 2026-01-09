@@ -1,12 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoFactory.Components;
 using MonoFactory.Entities.Interfaces;
 using MonoFactory.Entities.Machines.States;
 using MonoFactory.Items;
 using MonoFactory.Managers;
-using MonoFactory.Components;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace MonoFactory.Entities.Machines
@@ -38,33 +39,53 @@ namespace MonoFactory.Entities.Machines
         public Texture2D ItemTexture { get; private set; }
         public Rectangle OutputItemSourceRect { get; private set; }
 
-        public Machine(Texture2D texture, Vector2 position, WorldManager world, Texture2D itemTexture)
+        private string _machineType;
+
+        public Machine(Texture2D texture, Vector2 position, WorldManager world, Texture2D itemTexture, string machineType)
         {
             Texture = texture;
             Position = position;
             World = world;
             ItemTexture = itemTexture;
+            _machineType = machineType;
 
             OutputItemSourceRect = new Rectangle(4 * 32, 11 * 32, 32, 32);
 
             SourceRect = new Rectangle(0, 412, 64, 100);
 
+            InitializeRecipes();
             SetState(new WaitingForInputState());
+
         }
 
         private void InitializeRecipes()
         {
-            var swordRecipe = new Recipe(
-                new List<String> { "Stick_1", "Iron Ore_1", "Iron Ore_1" },
-                new WeaponItem("Iron Sword", 1, 2)
-            );
-            _recipes.Add(swordRecipe);
 
-            var upgradeRecipe = new Recipe(
-            new List<String> { "Iron Sword_1", "Iron Sword_1" },
-            new WeaponItem("Iron Sword", 2, 4)
-            );
-            _recipes.Add(upgradeRecipe);
+            if (_machineType == "Furnace")
+            {
+                var smeltRecipe = new Recipe(
+                    new List<string> { "Iron Ore_1" },
+                    new ResourceItem("Iron Bar")
+                );
+                _recipes.Add(smeltRecipe);
+                Debug.WriteLine("Initialized Furnace recipes.");
+            }
+            else if (_machineType == "Anvil")
+            {
+                var swordRecipe = new Recipe(
+                new List<String> { "Stick_1", "Iron Bar_1", "Iron Bar_1" },
+                new WeaponItem("Iron Sword", 1, 2)
+);
+                _recipes.Add(swordRecipe);
+
+                var upgradeRecipe = new Recipe(
+                new List<String> { "Iron Sword_1", "Iron Sword_1" },
+                new WeaponItem("Iron Sword", 2, 4)
+                );
+                _recipes.Add(upgradeRecipe);
+                Debug.WriteLine(" Initialized Anvil recipes.");
+            }
+
         }
 
         public void SetState(IMachineState newState)
@@ -76,6 +97,16 @@ namespace MonoFactory.Entities.Machines
         public void AddToBuffer(IItem item)
         {
             _inputBuffer.Add(item);
+        }
+
+        public void ClearBuffer()
+        {
+            _inputBuffer.Clear();
+        }
+
+        public List<IItem> GetBuffer()
+        {
+            return new List<IItem>(_inputBuffer);
         }
 
         public bool IsIngredient(string itemId)
@@ -96,6 +127,32 @@ namespace MonoFactory.Entities.Machines
                     return true;
                 }
             }
+            return false;
+        }
+
+        public bool CouldMatchRecipe(List<string> testBufferIds)
+        {
+            foreach (var recipe in _recipes)
+            {
+                var testCounts = testBufferIds.GroupBy(x => x).ToDictionary(g => g.Key, g => g.Count());
+                var recipeCounts = recipe.Ingredients.GroupBy(x => x).ToDictionary(g => g.Key, g => g.Count());
+
+                bool couldMatch = true;
+                foreach (var testItem in testCounts)
+                {
+                    if (!recipeCounts.ContainsKey(testItem.Key) || testItem.Value > recipeCounts[testItem.Key])
+                    {
+                        couldMatch = false;
+                        break;
+                    }
+                }
+
+                if (couldMatch)
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
 

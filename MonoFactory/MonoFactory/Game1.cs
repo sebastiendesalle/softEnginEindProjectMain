@@ -128,6 +128,7 @@ namespace MonoFactory
             _entityFactory.RegisterTexture("Goblin_Patrol", enemyTexture);
             _entityFactory.RegisterTexture("Goblin_Turret", enemyTexture);
             _entityFactory.RegisterTexture("Furnace", _factorySheet);
+            _entityFactory.RegisterTexture("Anvil", _factorySheet);
 
 
             _entityFactory.RegisterCreator("Chest", (pos, tex) =>
@@ -146,7 +147,10 @@ namespace MonoFactory
                 new Enemy(tex, pos, new StationaryStrategy(), world));
 
             _entityFactory.RegisterCreator("Furnace", (pos, tex) =>
-                new Machine(tex, pos, world, _factorySheet));
+                new Machine(tex, pos, world, _factorySheet, "Furnace"));
+
+            _entityFactory.RegisterCreator("Anvil", (pos, tex) =>
+                new Machine(tex, pos, world, _factorySheet, "Anvil"));
         }
 
         private void LoadLevel(int levelIndex)
@@ -170,6 +174,8 @@ namespace MonoFactory
             {
                 world.AddEntity(_entityFactory.CreateEntity("Chest", GridHelper.GridToWorld(8, 8)));
                 world.AddEntity(_entityFactory.CreateEntity("Furnace", GridHelper.GridToWorld(14, 10)));
+
+                world.AddEntity(_entityFactory.CreateEntity("Anvil", GridHelper.GridToWorld(16, 20)));
 
                 SpawnRandomItems(50);
             }
