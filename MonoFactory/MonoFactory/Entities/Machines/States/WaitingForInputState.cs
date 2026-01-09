@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoFactory.Items;
 
 namespace MonoFactory.Entities.Machines.States
 {
@@ -31,6 +32,38 @@ namespace MonoFactory.Entities.Machines.States
             foreach (var entry in hero.Inventory.Items)
             {
                 var item = entry.Value.Item;
+
+                if (item is WeaponItem && entry.Value.Count >= 2)
+                {
+                    string itemId = item.GetId();
+
+                    if (machine.IsIngredient(itemId))
+                    {
+                        List<string> testBuffer = new List<string>(bufferIds);
+                        testBuffer.Add(itemId);
+
+                        if (machine.CouldMatchRecipe(testBuffer))
+                        {
+                            hero.Inventory.RemoveItem(item, 1);
+                            machine.AddToBuffer(item);
+                            Debug.WriteLine($"Added {item.Name} to machine buffer");
+                            Debug.WriteLine($"[Machine] Buffer now contains: {string.Join(", ", machine.GetBuffer().Select(i => i.GetId()))}");
+
+                            if (machine.TryCraft())
+                            {
+                                Debug.WriteLine("Crafting started.");
+                                return;
+                            }
+                            return;
+                        }
+
+                    }
+                }
+            }
+
+            foreach (var entry in hero.Inventory.Items)
+            {
+                var item = entry.Value.Item;
                 string itemId = item.GetId();
 
                 Debug.WriteLine($"Checking inventory item {itemId}");
@@ -49,12 +82,11 @@ namespace MonoFactory.Entities.Machines.States
 
                         if (machine.TryCraft())
                         {
-                            Debug.WriteLine("Recipe matched! Crafting started.");
+                            Debug.WriteLine("Crafting started.");
                             return;
                         }
                         return;
                     }
-
                 }
             }
         }
