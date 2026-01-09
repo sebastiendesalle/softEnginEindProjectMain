@@ -49,9 +49,16 @@ namespace MonoFactory.UI
 
             if (hero.Inventory != null)
             {
-                foreach (var item in hero.Inventory.Items)
+                foreach (var entry in hero.Inventory.Items)
                 {
-                    spriteBatch.DrawString(_font, $"- {item.Key}: {item.Value}", itemPos, Color.White);
+                    var invItem = entry.Value;
+                    string displayName = $"{invItem.Item.Name}";
+
+                    if (invItem.Item.Level > 1)
+                    {
+                        displayName += $" Lvl {invItem.Item.Level}";
+                    }
+                    spriteBatch.DrawString(_font, $"- {displayName}: {invItem.Count}", itemPos, Color.White);
                     itemPos.Y += 20;
                 }
             }
