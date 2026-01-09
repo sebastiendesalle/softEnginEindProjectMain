@@ -6,14 +6,11 @@ using System.Threading.Tasks;
 
 namespace MonoFactory.Items
 {
-    public class ResourceItem: IItem
+    public class ResourceItem: BaseItem
     {
-        public string Name { get; private set; }
-        public int StackSize { get; private set; } = 99;
-
         public ResourceItem(string name)
+            : base(name, ItemType.Resource, 1)
         {
-            Name = name;
         }
     }
 }

@@ -6,9 +6,18 @@ using System.Threading.Tasks;
 
 namespace MonoFactory.Items
 {
-    public interface IItem
+    public enum ItemType
+    {
+        Resource,
+        Weapon
+    }
+    public interface IItem : IIEquatable<IItem>
     {
         string Name { get; }
+        ItemType Type { get; }
+        int Level { get; }
         int StackSize { get; }
+        string GetId();
+
     }
 }
