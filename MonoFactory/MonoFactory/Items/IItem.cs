@@ -11,7 +11,7 @@ namespace MonoFactory.Items
         Resource,
         Weapon
     }
-    public interface IItem : IIEquatable<IItem>
+    public interface IItem : IEquatable<IItem>
     {
         string Name { get; }
         ItemType Type { get; }
