@@ -112,6 +112,7 @@ namespace MonoFactory
             // load textures for world
             Texture2D enemyTexture = Content.Load<Texture2D>("Skeleton enemy");
             Texture2D chestTexture = Content.Load<Texture2D>("chest");
+            Texture2D anvilTexture = Content.Load<Texture2D>("crafter");
 
             _factorySheet = Content.Load<Texture2D>("ore");
             Texture2D stickTexture = Content.Load<Texture2D>("stick");
@@ -126,15 +127,16 @@ namespace MonoFactory
             _entityFactory = new EntityFactory();
 
             _entityFactory.RegisterTexture("Chest", chestTexture);
+            _entityFactory.RegisterTexture("Anvil", anvilTexture);
             _entityFactory.RegisterTexture("Goblin_Chaser", enemyTexture);
             _entityFactory.RegisterTexture("Goblin_Patrol", enemyTexture);
             _entityFactory.RegisterTexture("Goblin_Turret", enemyTexture);
             _entityFactory.RegisterTexture("Furnace", _factorySheet);
-            _entityFactory.RegisterTexture("Anvil", _factorySheet);
 
 
             _entityFactory.RegisterCreator("Chest", (pos, tex) =>
                 new Chest(tex, pos));
+
 
             _entityFactory.RegisterCreator("Goblin_Chaser", (pos, tex) =>
                 new Enemy(tex, pos, new ChaseStrategy(), world));
