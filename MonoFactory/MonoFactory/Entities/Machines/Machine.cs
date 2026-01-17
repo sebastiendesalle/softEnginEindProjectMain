@@ -111,7 +111,7 @@ namespace MonoFactory.Entities.Machines
 
                 var upgrade4Recipe = new Recipe(
                   new List<String> { "Iron Sword_3", "Iron Sword_3" },
-                new WeaponItem("Iron Sword", 3, 10)
+                new WeaponItem("Iron Sword", 4, 10)
                 );
                 _recipes.Add(upgrade4Recipe);
                 Debug.WriteLine(" Initialized Anvil recipes.");

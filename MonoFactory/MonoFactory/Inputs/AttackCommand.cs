@@ -25,6 +25,7 @@ namespace MonoFactory.Inputs
             if (weapon != null)
             {
                 damage = weapon.Damage;
+                Debug.WriteLine($"Attacking with {weapon.Name} (Lvl {weapon.Level})");
             }
             Vector2 attackOrigin = hero.Rectangle.Center.ToVector2();
 

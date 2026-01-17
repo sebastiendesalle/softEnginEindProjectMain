@@ -33,8 +33,14 @@ namespace MonoFactory.Entities.Machines.States
             {
                 var item = entry.Value.Item;
 
-                if (item is WeaponItem && entry.Value.Count >= 2)
+                if (item is WeaponItem weapon && entry.Value.Count >= 2)
                 {
+
+                    if (weapon.Level >= 4)
+                    {
+                        Debug.WriteLine("Cannot upgrade, weapon max level");
+                        continue;
+                    }
                     string itemId = item.GetId();
 
                     if (machine.IsIngredient(itemId))

@@ -102,11 +102,21 @@ namespace MonoFactory.Components
             {
                 if (entry.Item is WeaponItem weapon)
                 {
+                    Debug.WriteLine($"[Inventory] Found weapon: {weapon.Name} (Lvl {weapon.Level}, Dmg {weapon.Damage})");
                     if (best == null || weapon.Damage > best.Damage)
                     {
                         best = weapon;
                     }
                 }
+            }
+
+            if (best != null)
+            {
+                Debug.WriteLine($"[Inventory] Best weapon: {best.Name} (Lvl {best.Level}, Dmg {best.Damage})");
+            }
+            else
+            {
+                Debug.WriteLine("[Inventory] No weapons found!");
             }
             return best;
         }
