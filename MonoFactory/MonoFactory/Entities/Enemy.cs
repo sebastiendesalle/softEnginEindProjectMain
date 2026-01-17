@@ -34,7 +34,7 @@ namespace MonoFactory.Entities
         private Color _tintColor = Color.White;
         private float _damageFlashTimer = 0f;
 
-        public int Health { get; private set; } = 3;
+        public int Health { get; private set; } = 9;
 
         private const float Scale = 3.0f;
 
@@ -49,12 +49,13 @@ namespace MonoFactory.Entities
         private bool _isDead = false;
         private bool _isVisible = true;
 
-        public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy, WorldManager world)
+        public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy, WorldManager world, int health = 9)
         {
             _texture = texture;
             Position = startPosition;
             _movementStrategy = strategy;
             _world = world;
+            Health = health;
 
             _random = new Random();
 

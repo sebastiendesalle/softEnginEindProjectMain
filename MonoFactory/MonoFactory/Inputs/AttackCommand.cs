@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using MonoFactory.Entities;
 using MonoFactory.Managers;
+using System.Diagnostics;
 
 
 namespace MonoFactory.Inputs
@@ -9,20 +10,25 @@ namespace MonoFactory.Inputs
     {
 
         private WorldManager _world;
-        private int _damage;
         private float _range;
 
-        public AttackCommand(WorldManager world, int damage = 1, float range = 100f)
+        public AttackCommand(WorldManager world, float range = 100f)
         {
             _world = world;
-            _damage = damage;
             _range = range;
         }
         public void Execute(Hero hero)
         {
+            int damage = 1;
+            var weapon = hero.Inventory.GetBestWeapon();
+
+            if (weapon != null)
+            {
+                damage = weapon.Damage;
+            }
             Vector2 attackOrigin = hero.Rectangle.Center.ToVector2();
 
-            _world.DamageEntitiesInArea(attackOrigin, _range, _damage, hero);
+            _world.DamageEntitiesInArea(attackOrigin, _range, damage, hero);
         }
     }
 }

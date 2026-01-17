@@ -139,16 +139,16 @@ namespace MonoFactory
 
 
             _entityFactory.RegisterCreator("Goblin_Chaser", (pos, tex) =>
-                new Enemy(tex, pos, new ChaseStrategy(), world));
+                new Enemy(tex, pos, new ChaseStrategy(), world, 9));
 
             _entityFactory.RegisterCreator("Goblin_Patrol", (pos, tex) =>
             {
                 Vector2 endPos = pos + new Vector2(200, 0);
-                return new Enemy(tex, pos, new PatrolStrategy(pos, endPos), world);
+                return new Enemy(tex, pos, new PatrolStrategy(pos, endPos), world, 12);
             });
 
             _entityFactory.RegisterCreator("Goblin_Turret", (pos, tex) =>
-                new Enemy(tex, pos, new StationaryStrategy(), world));
+                new Enemy(tex, pos, new StationaryStrategy(), world, 15));
 
             _entityFactory.RegisterCreator("Furnace", (pos, tex) =>
                 new Machine(tex, pos, world, _factorySheet, "Furnace", ironBarTexture));
@@ -166,7 +166,7 @@ namespace MonoFactory
             camera = new Camera();
             _interactCommand = new InteractCommand(world);
 
-            _attackCommand = new AttackCommand(world, damage: 1, range: 150f);
+            _attackCommand = new AttackCommand(world, range: 150f);
 
             var inputReader = new KeyboardReader();
 

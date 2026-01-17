@@ -104,12 +104,13 @@ namespace MonoFactory.Entities.Machines
                 _recipes.Add(upgrade2Recipe);
 
                 var upgrade3Recipe = new Recipe(
-                   new List<String> { "Iron Sword_2", "Iron Sword_2" },
+                new List<String> { "Iron Sword_2", "Iron Sword_2" },
                 new WeaponItem("Iron Sword", 3, 6)
                 );
+                _recipes.Add(upgrade3Recipe);
 
                 var upgrade4Recipe = new Recipe(
-                   new List<String> { "Iron Sword_2", "Iron Sword_2" },
+                  new List<String> { "Iron Sword_3", "Iron Sword_3" },
                 new WeaponItem("Iron Sword", 3, 10)
                 );
                 _recipes.Add(upgrade4Recipe);
