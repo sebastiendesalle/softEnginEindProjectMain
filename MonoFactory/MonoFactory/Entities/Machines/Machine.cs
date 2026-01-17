@@ -28,10 +28,10 @@ namespace MonoFactory.Entities.Machines
         public IItem OutputItem { get; } = new ResourceItem("Iron Bar");
         public float ProcessTime { get; } = 3.0f;
 
-        private int _width = 64;
-        private int _height = 100;
+        private int _width;
+        private int _height;
 
-        public float Scale { get; private set; } = 2.0f;
+        public float Scale { get; private set; }
 
         public Rectangle SourceRect { get; set; }
         public Rectangle Rectangle => new Rectangle((int)Position.X, (int)Position.Y, (int)(_width * Scale), (int)(_height* Scale));
@@ -53,7 +53,27 @@ namespace MonoFactory.Entities.Machines
 
             OutputItemSourceRect = new Rectangle(4 * 32, 11 * 32, 32, 32);
 
-            SourceRect = new Rectangle(0, 412, 64, 100);
+            if (_machineType == "Furnace")
+            {
+                _width = 64;
+                _height = 100;
+                Scale = 2.0f;
+                SourceRect = new Rectangle(0, 412, 64, 100);
+            }
+            else if (_machineType == "Crafter")
+            {
+                _width = 300;
+                _height = 300;
+                Scale = 0.43f;
+                SourceRect = new Rectangle(0, 0, 300, 300);
+            }
+            else
+            {
+                _width = texture.Width;
+                _height = texture.Height;
+                Scale = 1.0f;
+                SourceRect = new Rectangle(0, 0, texture.Width, texture.Height);
+            }
 
             InitializeRecipes();
             SetState(new WaitingForInputState());
@@ -89,7 +109,7 @@ namespace MonoFactory.Entities.Machines
                 _recipes.Add(smeltRecipe);
                 Debug.WriteLine("Initialized Furnace recipes.");
             }
-            else if (_machineType == "Anvil")
+            else if (_machineType == "Crafter")
             {
                 var swordRecipe = new Recipe(
                 new List<String> { "Stick_1", "Iron Bar_1", "Iron Bar_1" },
@@ -194,8 +214,15 @@ namespace MonoFactory.Entities.Machines
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            if (_machineType == "Crafter")
+            {
+                spriteBatch.Draw(Texture, Position, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+            }
+            else
+            {
+                spriteBatch.Draw(Texture, Position, SourceRect, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 0f);
+            }
 
-            spriteBatch.Draw(Texture, Position, SourceRect, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, 1f);
             CurrentState.Draw(spriteBatch, this);
         }
 

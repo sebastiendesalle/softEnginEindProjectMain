@@ -112,7 +112,7 @@ namespace MonoFactory
             // load textures for world
             Texture2D enemyTexture = Content.Load<Texture2D>("Skeleton enemy");
             Texture2D chestTexture = Content.Load<Texture2D>("chest");
-            Texture2D anvilTexture = Content.Load<Texture2D>("crafter");
+            Texture2D crafterTexture = Content.Load<Texture2D>("crafter");
 
             _factorySheet = Content.Load<Texture2D>("ore");
             Texture2D stickTexture = Content.Load<Texture2D>("stick");
@@ -127,7 +127,7 @@ namespace MonoFactory
             _entityFactory = new EntityFactory();
 
             _entityFactory.RegisterTexture("Chest", chestTexture);
-            _entityFactory.RegisterTexture("Anvil", anvilTexture);
+            _entityFactory.RegisterTexture("Crafter", crafterTexture);
             _entityFactory.RegisterTexture("Goblin_Chaser", enemyTexture);
             _entityFactory.RegisterTexture("Goblin_Patrol", enemyTexture);
             _entityFactory.RegisterTexture("Goblin_Turret", enemyTexture);
@@ -153,8 +153,8 @@ namespace MonoFactory
             _entityFactory.RegisterCreator("Furnace", (pos, tex) =>
                 new Machine(tex, pos, world, _factorySheet, "Furnace", ironBarTexture));
 
-            _entityFactory.RegisterCreator("Anvil", (pos, tex) =>
-                new Machine(tex, pos, world, _factorySheet, "Anvil", swordTexture));
+            _entityFactory.RegisterCreator("Crafter", (pos, tex) =>
+                new Machine(tex, pos, world, _factorySheet, "Crafter", swordTexture));
         }
 
         private void LoadLevel(int levelIndex)
@@ -179,7 +179,7 @@ namespace MonoFactory
                 world.AddEntity(_entityFactory.CreateEntity("Chest", GridHelper.GridToWorld(8, 8)));
                 world.AddEntity(_entityFactory.CreateEntity("Furnace", GridHelper.GridToWorld(14, 10)));
 
-                world.AddEntity(_entityFactory.CreateEntity("Anvil", GridHelper.GridToWorld(16, 20)));
+                world.AddEntity(_entityFactory.CreateEntity("Crafter", GridHelper.GridToWorld(16, 20)));
 
                 SpawnRandomItems(50);
             }
