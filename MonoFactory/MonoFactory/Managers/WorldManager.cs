@@ -76,6 +76,10 @@ namespace MonoFactory.Managers
                 {
                     continue;
                 }
+                if (owner is Enemy && entity is Enemy)
+                {
+                    continue;
+                }
                 if (entity.Rectangle.Intersects(targetRect))
                 {
                     return true;
