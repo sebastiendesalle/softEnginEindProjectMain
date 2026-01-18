@@ -148,7 +148,11 @@ namespace MonoFactory
             });
 
             _entityFactory.RegisterCreator("Goblin_Turret", (pos, tex) =>
-                new Enemy(tex, pos, new StationaryStrategy(), world, 15));
+                { 
+                    var enemy = new Enemy(tex, pos, new StationaryStrategy(), world, 15, canShoot: true);
+                    enemy.SetProjectileTexture(_pixelTexture);
+                    return enemy;
+                });
 
             _entityFactory.RegisterCreator("Furnace", (pos, tex) =>
                 new Machine(tex, pos, world, _factorySheet, "Furnace", ironBarTexture));

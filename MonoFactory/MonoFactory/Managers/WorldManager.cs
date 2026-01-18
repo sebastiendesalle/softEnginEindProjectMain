@@ -139,6 +139,17 @@ namespace MonoFactory.Managers
             for (int i = _entities.Count - 1; i >= 0; i--)
             {
                 _entities[i].Update(gameTime);
+
+                if (_entities[i] is Projectile projectile && projectile.IsActive)
+                {
+                    foreach (var entity in _entities)
+                    {
+                        if (projectile.CheckHit(entity))
+                        {
+                            break;
+                        }
+                    }
+                }
             }
         }
 
