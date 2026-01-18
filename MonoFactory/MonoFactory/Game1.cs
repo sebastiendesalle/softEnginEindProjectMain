@@ -161,6 +161,10 @@ namespace MonoFactory
         {
 
             _currentLevelIndex = levelIndex;
+
+            var savedInventory = hero?.Inventory;
+            int savedHealth = hero?.Health ?? 10;
+
             // reset the world for a new game
             world = new WorldManager(Content.Load<Texture2D>("tile_grass"));
             camera = new Camera();
@@ -172,6 +176,16 @@ namespace MonoFactory
 
             Vector2 startPos = GridHelper.GridToWorld(5, 5);
             hero = new Hero(_heroTexture, inputReader, GridHelper.GridToWorld(5, 5), world, scale: 2f);
+
+            if (savedInventory != null && levelIndex > 1)
+            {
+                foreach (var entry in savedInventory.Items)
+                {
+                    hero.Inventory.AddItem(entry.Value.Item, entry.Value.Count);
+                }
+
+                hero.SetHealth(savedHealth);
+            }
             world.AddEntity(hero);
 
             if (levelIndex == 1)

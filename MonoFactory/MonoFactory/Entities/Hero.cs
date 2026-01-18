@@ -230,5 +230,10 @@ namespace MonoFactory.Entities
             Debug.WriteLine($"Took damage: {Health}");
 
         }
+
+        public void SetHealth(int health)
+        {
+            Health = health;
+        }
     }
 }

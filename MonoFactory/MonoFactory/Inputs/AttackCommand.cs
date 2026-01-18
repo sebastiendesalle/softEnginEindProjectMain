@@ -20,13 +20,14 @@ namespace MonoFactory.Inputs
         public void Execute(Hero hero)
         {
             int damage = 1;
+
             var weapon = hero.Inventory.GetBestWeapon();
 
             if (weapon != null)
             {
                 damage = weapon.Damage;
-                Debug.WriteLine($"Attacking with {weapon.Name} (Lvl {weapon.Level})");
             }
+
             Vector2 attackOrigin = hero.Rectangle.Center.ToVector2();
 
             _world.DamageEntitiesInArea(attackOrigin, _range, damage, hero);
