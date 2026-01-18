@@ -20,6 +20,12 @@ namespace MonoFactory.Entities
         private Dictionary<string, Animation> _animations;
         private Animation _currentAnimation;
 
+        private float _shootCooldown = 0f;
+        private const float ShootDelay = 2.0f;
+        private const float ShootRange = 500f;
+        private bool _canShoot;
+        private Texture2D _projectileTexture;
+
         private int _hitBoxWidth;
         private int _hitBoxHeight;
 
@@ -49,13 +55,14 @@ namespace MonoFactory.Entities
         private bool _isDead = false;
         private bool _isVisible = true;
 
-        public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy, WorldManager world, int health = 9)
+        public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy, WorldManager world, int health = 9, bool canShoot = false)
         {
             _texture = texture;
             Position = startPosition;
             _movementStrategy = strategy;
             _world = world;
             Health = health;
+            _canShoot = canShoot;
 
             _random = new Random();
 
@@ -257,8 +264,44 @@ namespace MonoFactory.Entities
                     _targetHero.TakeDamage(1);
                     _damageCooldown = DamageDelay;
                 }
+            }
 
-                
+            if (_canShoot && _targetHero != null && _projectileTexture != null)
+            {
+                if (_shootCooldown > 0)
+                {
+                    _shootCooldown -= deltaTime;
+                }
+
+                float dist = Vector2.Distance(Position, _targetHero.Position);
+                if (dist < ShootRange && _shootCooldown <= 0)
+                {
+                    if (_targetHero.Position.X < Position.X)
+                    {
+                        _flipEffect = SpriteEffects.FlipHorizontally;
+                    }
+                    else
+                    {
+                        _flipEffect = SpriteEffects.None;
+                    }
+
+                    Vector2 projectStart = Position;
+                    Vector2 targetPosition = _targetHero.Position;
+
+                    Projectile Projectile = new Projectile(
+                        projectStart,
+                        targetPosition,
+                        1,
+                        this,
+                        _projectileTexture,
+                        Color.Red
+                        );
+
+                    _world.AddEntity(Projectile);
+                    _shootCooldown = ShootDelay;
+
+                    Debug.WriteLine($"Enemy turret fired projectile at {targetPosition}");
+                }
             }
         }
 
@@ -306,6 +349,11 @@ namespace MonoFactory.Entities
             _isDead = true;
             _currentAnimation = _animations["Death"];
             _currentAnimation.Reset();
+        }
+
+        public void SetProjectileTexture(Texture2D texture)
+        {
+            _projectileTexture = texture;
         }
     }
 }
