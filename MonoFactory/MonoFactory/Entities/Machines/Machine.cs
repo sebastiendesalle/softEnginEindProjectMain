@@ -134,7 +134,7 @@ namespace MonoFactory.Entities.Machines
                 new WeaponItem("Iron Sword", 4, 10)
                 );
                 _recipes.Add(upgrade4Recipe);
-                Debug.WriteLine(" Initialized Anvil recipes.");
+                Debug.WriteLine(" Initialized Crafter recipes.");
             }
 
         }
