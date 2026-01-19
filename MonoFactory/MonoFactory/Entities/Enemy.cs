@@ -48,6 +48,7 @@ namespace MonoFactory.Entities
         private const float DamageDelay = 1.0f;
 
         private const float AttackRange = 100.0f;
+        private int _damage;
 
         private Random _random;
 
@@ -58,7 +59,7 @@ namespace MonoFactory.Entities
 
         private SoundManager _soundManager;
 
-        public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy, WorldManager world, SoundManager soundManager, int health = 9, bool canShoot = false)
+        public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy, WorldManager world, SoundManager soundManager, int health = 9, int damage = 1, bool canShoot = false)
         {
             _texture = texture;
             Position = startPosition;
@@ -68,6 +69,7 @@ namespace MonoFactory.Entities
             _canShoot = canShoot;
             _soundManager = soundManager;
             _random = new Random();
+            _damage = damage;
 
             LoadAnimations();
 
@@ -304,6 +306,14 @@ namespace MonoFactory.Entities
                     _shootCooldown = ShootDelay;
 
                     Debug.WriteLine($"Enemy turret fired projectile at {targetPosition}");
+                }
+
+                if (dist < AttackRange && _damageCooldown <= 0)
+                {
+                    _isAttacking = true;
+
+                    _targetHero.TakeDamage(_damage);
+                    _damageCooldown = DamageDelay;
                 }
             }
         }
