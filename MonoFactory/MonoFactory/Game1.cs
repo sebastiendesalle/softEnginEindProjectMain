@@ -230,14 +230,15 @@ namespace MonoFactory
             world.AddEntity(hero);
 
             world.SetEnemyDefeatedCallback(() => OnAllEnemiesDefeated());
+            _portalSpawned = false;
 
             if (levelIndex == 1)
             {
-                world.AddEntity(_entityFactory.CreateEntity("Furnace", GridHelper.GridToWorld(14, 10)));
-                world.AddEntity(_entityFactory.CreateEntity("Crafter", GridHelper.GridToWorld(16, 20)));
+                world.AddEntity(_entityFactory.CreateEntity("Furnace", GridHelper.GridToWorld(8, 5)));
+                world.AddEntity(_entityFactory.CreateEntity("Crafter", GridHelper.GridToWorld(12, 6)));
                 SpawnRandomItems(50);
 
-                world.SpawnPortal(GridHelper.GridToWorld(30, 10), _portalTexture);
+                world.SpawnPortal(GridHelper.GridToWorld(40, 10), _portalTexture);
                 _soundManager.PlayMusic("Crafting");
             }
             else if (levelIndex == 2)
