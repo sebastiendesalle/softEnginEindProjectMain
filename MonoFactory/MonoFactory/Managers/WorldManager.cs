@@ -159,8 +159,13 @@ namespace MonoFactory.Managers
             }
 
             int enemiesAfterUpdate = GetEnemyCount();
+            if (enemiesBeforeUpdate != enemiesAfterUpdate)
+            {
+                Debug.WriteLine($"[WorldManager] Enemy count changed : {enemiesBeforeUpdate}");
+            }
             if (enemiesBeforeUpdate > 0 && enemiesAfterUpdate == 0)
             {
+                Debug.WriteLine($"[WorldManager] All enemies defeated");
                 _onAllEnemiesDefeated?.Invoke();
             }
         }
@@ -198,7 +203,10 @@ namespace MonoFactory.Managers
             {
                 if (entity is Enemy enemy && !enemy.IsDead)
                 {
-                    count++;
+                    if (!enemy.IsDead)
+                    {
+                        count++;
+                    }
                 }
             }
             return count;

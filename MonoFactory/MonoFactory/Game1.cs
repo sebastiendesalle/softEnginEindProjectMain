@@ -67,6 +67,9 @@ namespace MonoFactory
 
         private Random _random;
 
+        private Texture2D _portalTexture;
+        private bool _portalSpawned = false;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -159,6 +162,29 @@ namespace MonoFactory
 
             _entityFactory.RegisterCreator("Crafter", (pos, tex) =>
                 new Machine(tex, pos, world, _factorySheet, "Crafter", swordTexture));
+
+
+            //portal
+            _pixelTexture = new Texture2D(GraphicsDevice, 1, 1);
+            _pixelTexture.SetData(new Color[] { Color.White });
+
+            _portalTexture = new Texture2D(GraphicsDevice, 32, 32);
+            Color[] portalData = new Color[32 * 32];
+            for (int i = 0; i < portalData.Length; i++)
+            {
+                int x = i % 32;
+                int y = i / 32;
+                float distFromCenter = Vector2.Distance(new Vector2(x, y), new Vector2(16, 16));
+                if (distFromCenter < 14)
+                {
+                    portalData[i] = Color.White;
+                }
+                else
+                {
+                    portalData[i] = Color.Transparent;
+                }
+            }
+            _portalTexture.SetData(portalData);
         }
 
         private void LoadLevel(int levelIndex)
@@ -192,14 +218,15 @@ namespace MonoFactory
             }
             world.AddEntity(hero);
 
+            world.SetEnemyDefeatedCallback(() => OnAllEnemiesDefeated());
+
             if (levelIndex == 1)
             {
-                world.AddEntity(_entityFactory.CreateEntity("Chest", GridHelper.GridToWorld(8, 8)));
                 world.AddEntity(_entityFactory.CreateEntity("Furnace", GridHelper.GridToWorld(14, 10)));
-
                 world.AddEntity(_entityFactory.CreateEntity("Crafter", GridHelper.GridToWorld(16, 20)));
-
                 SpawnRandomItems(50);
+
+                world.SpawnPortal(GridHelper.GridToWorld(30, 10), _portalTexture);
             }
             else if (levelIndex == 2)
             {
@@ -216,6 +243,16 @@ namespace MonoFactory
                 world.AddEntity(turret);
 
                 world.AddEntity(_entityFactory.CreateEntity("Chest", GridHelper.GridToWorld(22, 10)));
+            }
+        }
+
+        private void OnAllEnemiesDefeated()
+        {
+            if (!_portalSpawned && _currentLevelIndex > 1)
+            {
+                Vector2 portalPos = GridHelper.GridToWorld(25, 10);
+                world.SpawnPortal(portalPos, _portalTexture);
+                _portalSpawned = true;
             }
         }
 
@@ -316,7 +353,7 @@ namespace MonoFactory
             // camera follows player
             camera.Follow(hero.Position, targetWidth, targetHeight);
 
-            CheckLevelTransition();
+            CheckPortalTransition();
 
             // implementing command pattern
             if (kState.IsKeyDown(Keys.E) && !_prevKeyState.IsKeyDown(Keys.E))
@@ -356,9 +393,9 @@ namespace MonoFactory
             _prevMouseState = mState;
         }
 
-        private void CheckLevelTransition()
+        private void CheckPortalTransition()
         {
-            if (hero.Position.X > 2000)
+            if (world.IsPlayerInPortal(hero))
             {
                 if (_currentLevelIndex == 1)
                 {
