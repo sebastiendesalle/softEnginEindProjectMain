@@ -160,6 +160,22 @@ namespace MonoFactory.Entities.Machines
             return new List<IItem>(_inputBuffer);
         }
 
+        public void RemoveLastItem(Hero hero)
+        {
+            if (_inputBuffer.Count > 0)
+            {
+                IItem itemToRemove = _inputBuffer[_inputBuffer.Count - 1];
+                _inputBuffer.RemoveAt(_inputBuffer.Count - 1);
+
+                hero.Inventory.AddItem(itemToRemove, 1);
+                Debug.WriteLine($"Removed {itemToRemove.Name} from machine buffer");
+            }
+            else
+            {
+                Debug.WriteLine("Cannot remove item: buffer is empty");
+            }
+        }
+
         public bool IsIngredient(string itemId)
         {
             return _recipes.Any(r => r.Ingredients.Contains(itemId));

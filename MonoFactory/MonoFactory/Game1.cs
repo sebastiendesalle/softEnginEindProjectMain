@@ -367,6 +367,16 @@ namespace MonoFactory
 
             CheckPortalTransition();
 
+            if (kState.IsKeyDown(Keys.R) && !_prevKeyState.IsKeyDown(Keys.R))
+            {
+                IInteractable nearby = world.GetNearestInteractable(hero.Position, InteractionRadius);
+
+                if (nearby is Machine machine)
+                {
+                    machine.RemoveLastItem(hero);
+                }
+            }
+
             // implementing command pattern
             if (kState.IsKeyDown(Keys.E) && !_prevKeyState.IsKeyDown(Keys.E))
             {
