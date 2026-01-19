@@ -1,9 +1,12 @@
-﻿using MonoFactory.Core;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using MonoFactory.Core;
+using MonoFactory.Entities;
+using MonoFactory.Factories;
 using MonoFactory.Levels;
+using MonoFactory.Strategies;
 using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace MonoFactory.Managers
 {
@@ -171,6 +174,62 @@ namespace MonoFactory.Managers
                 IsSafeZone = false
             };
             _levels.Add(7, lvl7);
+
+            //END LEVEL 7
+        }
+        public void LoadLevel(int index, WorldManager world, EntityFactory factory, Texture2D enemyTex, SoundManager soundManager, Texture2D projectileTex)
+        {
+            if (!_levels.ContainsKey(index)) return;
+
+            LevelData data = _levels[index];
+
+            foreach (var entity in data.StaticEntities)
+            {
+                world.AddEntity(factory.CreateEntity(entity.Type, entity.Pos));
+            }
+
+            foreach (var wave in data.Waves)
+            {
+                for (int i = 0; i < wave.Count; i++)
+                {
+                    Vector2 pos = GetRandomSpawnPos();
+
+
+                    IMovementStrategy strategy;
+                    if (wave.EnemyType == "Goblin_Patrol")
+                    {
+                        strategy = new PatrolStrategy(pos, pos + new Vector2(200, 0));
+                    }
+                    else if (wave.EnemyType == "Goblin_Turret")
+                    {
+                        strategy = new StationaryStrategy();
+                    }
+                    else
+                    {
+                        strategy = new ChaseStrategy(wave.Speed);
+                    }
+
+                    var enemy = new Enemy(enemyTex, pos, strategy, world, soundManager, wave.Hp, wave.Damage, wave.CanShoot);
+
+                    if (wave.CanShoot) enemy.SetProjectileTexture(projectileTex);
+
+
+                    world.AddEntity(enemy);
+                }
+            }
+        }
+
+        public LevelData GetLevelData(int index)
+        {
+            if (_levels.ContainsKey(index)) return _levels[index];
+            return null;
+        }
+
+        private Vector2 GetRandomSpawnPos()
+        {
+            int x = _random.Next(15, 40);
+            int y = _random.Next(5, 20);
+            return GridHelper.GridToWorld(x, y);
         }
     }
 }
