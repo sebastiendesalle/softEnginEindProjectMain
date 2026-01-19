@@ -7,6 +7,11 @@ namespace MonoFactory.Strategies
     {
         private float _speed = 80f;
 
+        public ChaseStrategy(float speed = 80f)
+        {
+            _speed = speed;
+        }
+
         public Vector2 Move(GameTime gameTime, Vector2 currentPosition, Vector2 targetPosition)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
