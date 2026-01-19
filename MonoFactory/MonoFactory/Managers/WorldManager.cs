@@ -20,6 +20,9 @@ namespace MonoFactory.Managers
         private Texture2D grassTexture;
 
         private List<IGameObject> _entities = new List<IGameObject>();
+
+        private Portal _activePortal;
+        private Action _onAllEnemiesDefeated;
         
         public WorldManager(Texture2D grassTexture)
         {
@@ -136,6 +139,9 @@ namespace MonoFactory.Managers
 
         public void Update(GameTime gameTime)
         {
+
+            int enemiesBeforeUpdate = GetEnemyCount();
+
             for (int i = _entities.Count - 1; i >= 0; i--)
             {
                 _entities[i].Update(gameTime);
@@ -151,6 +157,51 @@ namespace MonoFactory.Managers
                     }
                 }
             }
+
+            int enemiesAfterUpdate = GetEnemyCount();
+            if (enemiesBeforeUpdate > 0 && enemiesAfterUpdate == 0)
+            {
+                _onAllEnemiesDefeated?.Invoke();
+            }
+        }
+
+        public void SetEnemyDefeatedCallback(Action callback)
+        {
+            _onAllEnemiesDefeated = callback;
+        }
+
+        public void SpawnPortal(Vector2 position, Texture2D texture)
+        {
+            if (_activePortal != null)
+            {
+                _entities.Remove(_activePortal);
+            }
+
+            _activePortal = new Portal(position, texture);
+            _entities.Add(_activePortal);
+            Debug.WriteLine($"portal spawned at {position}");
+        }
+
+        public bool IsPlayerInPortal(Hero hero)
+        {
+            if (_activePortal != null)
+            {
+                return _activePortal.CheckPlayerCollision(hero);
+            }
+            return false;
+        }
+
+        public int GetEnemyCount()
+        {
+            int count = 0;
+            foreach (var entity in _entities)
+            {
+                if (entity is Enemy enemy && !enemy.IsDead)
+                {
+                    count++;
+                }
+            }
+            return count;
         }
 
         public void Draw(SpriteBatch spriteBatch, Camera camera, GraphicsDevice graphics, Texture2D debugPixel = null)
