@@ -45,7 +45,7 @@ namespace MonoFactory.UI
             Vector2 itemPos = new Vector2(20, 60);
             spriteBatch.DrawString(_font, "Inventory: ", itemPos, Color.Gold);
 
-            itemPos.Y += 25;
+            itemPos.Y += 35;
 
             if (hero.Inventory != null)
             {
@@ -59,7 +59,7 @@ namespace MonoFactory.UI
                         displayName += $" Lvl {invItem.Item.Level}";
                     }
                     spriteBatch.DrawString(_font, $"- {displayName}: {invItem.Count}", itemPos, Color.White);
-                    itemPos.Y += 20;
+                    itemPos.Y += 35;
                 }
             }
         }
