@@ -42,14 +42,17 @@ namespace MonoFactory.Entities
 
         private bool _isAttacking = false;
 
+        private SoundManager _soundManager;
+
         public Rectangle Rectangle => new Rectangle((int)(Position.X - _hitBoxWidth / 2), (int)(Position.Y - _hitBoxHeight), _hitBoxWidth, _hitBoxHeight);
 
-        public Hero(Texture2D texture, IInputReader inputReader, Vector2 startPos, WorldManager world, float scale = 5f)
+        public Hero(Texture2D texture, IInputReader inputReader, Vector2 startPos, WorldManager world, SoundManager soundManager, float scale = 5f)
         {
             this.texture = texture;
             this.inputReader = inputReader;
             this.scale = scale;
             _world = world;
+            _soundManager = soundManager;
 
             // SETUP ANIMATIONS 
             animations = new Dictionary<string, Animation>();
@@ -228,7 +231,7 @@ namespace MonoFactory.Entities
             _damageFlashTimer = 0.2f;
 
             Debug.WriteLine($"Took damage: {Health}");
-
+            _soundManager.PlaySound("Hit");
         }
 
         public void SetHealth(int health)

@@ -56,7 +56,9 @@ namespace MonoFactory.Entities
         private bool _isVisible = true;
         public bool IsDead => _isDead;
 
-        public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy, WorldManager world, int health = 9, bool canShoot = false)
+        private SoundManager _soundManager;
+
+        public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy, WorldManager world, SoundManager soundManager, int health = 9, bool canShoot = false)
         {
             _texture = texture;
             Position = startPosition;
@@ -64,7 +66,7 @@ namespace MonoFactory.Entities
             _world = world;
             Health = health;
             _canShoot = canShoot;
-
+            _soundManager = soundManager;
             _random = new Random();
 
             LoadAnimations();
@@ -343,6 +345,8 @@ namespace MonoFactory.Entities
             {
                 Die();
             }
+
+            _soundManager.PlaySound("Hurt");
         }
 
         private void Die()

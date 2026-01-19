@@ -15,6 +15,8 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using MonoFactory.UI;
 using System;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace MonoFactory
 {
@@ -70,6 +72,8 @@ namespace MonoFactory
         private Texture2D _portalTexture;
         private bool _portalSpawned = false;
 
+        private SoundManager _soundManager;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -90,6 +94,7 @@ namespace MonoFactory
         protected override void Initialize()
         {
             _currentState = GameState.Menu;
+            _soundManager = new SoundManager();
             base.Initialize();
 
             camera = new Camera();
@@ -123,7 +128,7 @@ namespace MonoFactory
 
 
             // init world
-            world = new WorldManager(grassTexture);
+            world = new WorldManager(grassTexture, _soundManager);
 
             // setup factory
             _entityFactory = new EntityFactory();
@@ -134,17 +139,17 @@ namespace MonoFactory
             _entityFactory.RegisterTexture("Furnace", _factorySheet);
 
             _entityFactory.RegisterCreator("Goblin_Chaser", (pos, tex) =>
-                new Enemy(tex, pos, new ChaseStrategy(), world, 9));
+                new Enemy(tex, pos, new ChaseStrategy(), world, _soundManager, 9));
 
             _entityFactory.RegisterCreator("Goblin_Patrol", (pos, tex) =>
             {
                 Vector2 endPos = pos + new Vector2(200, 0);
-                return new Enemy(tex, pos, new PatrolStrategy(pos, endPos), world, 12);
+                return new Enemy(tex, pos, new PatrolStrategy(pos, endPos), world, _soundManager, 12);
             });
 
             _entityFactory.RegisterCreator("Goblin_Turret", (pos, tex) =>
                 { 
-                    var enemy = new Enemy(tex, pos, new StationaryStrategy(), world, 15, canShoot: true);
+                    var enemy = new Enemy(tex, pos, new StationaryStrategy(), world, _soundManager, 15, canShoot: true);
                     enemy.SetProjectileTexture(_pixelTexture);
                     return enemy;
                 });
@@ -177,6 +182,19 @@ namespace MonoFactory
                 }
             }
             _portalTexture.SetData(portalData);
+
+            //sfx
+
+            Song craftSong = Content.Load<Song>("CrafterTheme");
+            Song battleSong = Content.Load<Song>("BattleTheme");
+
+            SoundEffect hitSound = Content.Load<SoundEffect>("HitSound");
+            SoundEffect hurtSound = Content.Load<SoundEffect>("HurtSound");
+
+            _soundManager.RegisterSong("Crafting", craftSong);
+            _soundManager.RegisterSong("Battle", battleSong);
+            _soundManager.RegisterSoundEffect("Hit", hitSound);
+            _soundManager.RegisterSoundEffect("Hurt", hurtSound);
         }
 
         private void LoadLevel(int levelIndex)
@@ -188,7 +206,8 @@ namespace MonoFactory
             int savedHealth = hero?.Health ?? 10;
 
             // reset the world for a new game
-            world = new WorldManager(Content.Load<Texture2D>("tile_grass"));
+            Texture2D grassTexture = Content.Load<Texture2D>("tile_grass");
+            world = new WorldManager(grassTexture, _soundManager);
             camera = new Camera();
             _interactCommand = new InteractCommand(world);
 
@@ -197,7 +216,7 @@ namespace MonoFactory
             var inputReader = new KeyboardReader();
 
             Vector2 startPos = GridHelper.GridToWorld(5, 5);
-            hero = new Hero(_heroTexture, inputReader, GridHelper.GridToWorld(5, 5), world, scale: 2f);
+            hero = new Hero(_heroTexture, inputReader, GridHelper.GridToWorld(5, 5), world , _soundManager, scale: 2f);
 
             if (savedInventory != null && levelIndex > 1)
             {
@@ -219,6 +238,7 @@ namespace MonoFactory
                 SpawnRandomItems(50);
 
                 world.SpawnPortal(GridHelper.GridToWorld(30, 10), _portalTexture);
+                _soundManager.PlayMusic("Crafting");
             }
             else if (levelIndex == 2)
             {
@@ -233,6 +253,8 @@ namespace MonoFactory
                 world.AddEntity(patroller);
                 world.AddEntity(chaser2);
                 world.AddEntity(turret);
+
+                _soundManager.PlayMusic("Battle");
             }
         }
 

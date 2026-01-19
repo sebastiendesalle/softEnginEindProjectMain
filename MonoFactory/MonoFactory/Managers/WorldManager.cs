@@ -23,10 +23,13 @@ namespace MonoFactory.Managers
 
         private Portal _activePortal;
         private Action _onAllEnemiesDefeated;
-        
-        public WorldManager(Texture2D grassTexture)
+
+        private SoundManager _soundManager;
+
+        public WorldManager(Texture2D grassTexture, SoundManager soundManager)
         {
             this.grassTexture = grassTexture;
+            _soundManager = soundManager;
         }
 
         public void AddBuilding(Point coordinate, Tile tile)
@@ -116,6 +119,7 @@ namespace MonoFactory.Managers
         public void DamageEntitiesInArea(Vector2 center, float radius, int damage, IGameObject attacker)
         {
             var targets = _entities.ToList();
+            bool hitAnyone = false;
 
             foreach (var entity in targets)
             {
@@ -132,8 +136,13 @@ namespace MonoFactory.Managers
                     {
                         Debug.WriteLine($"hit for {damage} damage");
                         damageable.TakeDamage(damage);
+                        hitAnyone = true;
                     }
                 }
+            }
+            if (hitAnyone)
+            {
+                _soundManager.PlaySound("Hit");
             }
         }
 

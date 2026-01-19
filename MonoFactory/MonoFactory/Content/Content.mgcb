@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin BattleTheme.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:BattleTheme.mp3
+
 #begin crafter.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -24,6 +30,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:crafter.png
+
+#begin CrafterTheme.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:CrafterTheme.mp3
 
 #begin GameFont.spritefont
 /importer:FontDescriptionImporter
@@ -43,6 +55,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:GoblinKingSpriteSheet.png
+
+#begin HitSound.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:HitSound.ogg
+
+#begin HurtSound.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:HurtSound.ogg
 
 #begin ore.png
 /importer:TextureImporter
