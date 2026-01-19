@@ -54,6 +54,7 @@ namespace MonoFactory.Entities
         private bool _isAttacking = false;
         private bool _isDead = false;
         private bool _isVisible = true;
+        public bool IsDead => _isDead;
 
         public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy, WorldManager world, int health = 9, bool canShoot = false)
         {
