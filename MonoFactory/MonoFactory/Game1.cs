@@ -73,6 +73,7 @@ namespace MonoFactory
         private bool _portalSpawned = false;
 
         private SoundManager _soundManager;
+        private LevelManager _levelManager;
 
         public Game1()
         {
@@ -95,6 +96,7 @@ namespace MonoFactory
         {
             _currentState = GameState.Menu;
             _soundManager = new SoundManager();
+            _levelManager = new LevelManager();
             base.Initialize();
 
             camera = new Camera();
@@ -227,45 +229,43 @@ namespace MonoFactory
 
                 hero.SetHealth(savedHealth);
             }
-            world.AddEntity(hero);
 
+            world.AddEntity(hero);
             world.SetEnemyDefeatedCallback(() => OnAllEnemiesDefeated());
             _portalSpawned = false;
 
+            var levelData = _levelManager.GetLevelData(levelIndex);
+
+            if (levelData != null)
+            {
+                _soundManager.PlayMusic(levelData.MusicTrack);
+
+                if (levelData.ResourceCount > 0)
+                {
+                    SpawnRandomItems(levelData.ResourceCount);
+                }
+
+                Texture2D enemyTex = Content.Load<Texture2D>("Skeleton enemy");
+                _levelManager.LoadLevel(levelIndex, world, _entityFactory, enemyTex, _soundManager, _pixelTexture, hero);
+            }
+
             if (levelIndex == 1)
             {
-                world.AddEntity(_entityFactory.CreateEntity("Furnace", GridHelper.GridToWorld(8, 5)));
-                world.AddEntity(_entityFactory.CreateEntity("Crafter", GridHelper.GridToWorld(12, 6)));
-                SpawnRandomItems(50);
-
-                world.SpawnPortal(GridHelper.GridToWorld(40, 10), _portalTexture);
-                _soundManager.PlayMusic("Crafting");
-            }
-            else if (levelIndex == 2)
-            {
-                IGameObject patroller = _entityFactory.CreateEntity("Goblin_Patrol", GridHelper.GridToWorld(15, 2));
-                IGameObject chaser2 = _entityFactory.CreateEntity("Goblin_Chaser", GridHelper.GridToWorld(20, 10));
-                IGameObject turret = _entityFactory.CreateEntity("Goblin_Turret", GridHelper.GridToWorld(12, 12));
-
-                if (patroller is Enemy e1) e1.SetTarget(hero);
-                if (chaser2 is Enemy e2) e2.SetTarget(hero);
-                if (turret is Enemy e3) e3.SetTarget(hero);
-
-                world.AddEntity(patroller);
-                world.AddEntity(chaser2);
-                world.AddEntity(turret);
-
-                _soundManager.PlayMusic("Battle");
+                world.SpawnPortal(GridHelper.GridToWorld(35, 10), _portalTexture);
             }
         }
 
         private void OnAllEnemiesDefeated()
         {
-            if (!_portalSpawned && _currentLevelIndex > 1)
+            if (!_portalSpawned && _currentLevelIndex > 1 && _currentLevelIndex < 7)
             {
-                Vector2 portalPos = GridHelper.GridToWorld(25, 10);
+                Vector2 portalPos = GridHelper.GridToWorld(35, 10);
                 world.SpawnPortal(portalPos, _portalTexture);
                 _portalSpawned = true;
+            }
+            else if (_currentLevelIndex == 7)
+            {
+                _currentState = GameState.Victory;
             }
         }
 

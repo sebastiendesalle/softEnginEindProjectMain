@@ -177,7 +177,7 @@ namespace MonoFactory.Managers
 
             //END LEVEL 7
         }
-        public void LoadLevel(int index, WorldManager world, EntityFactory factory, Texture2D enemyTex, SoundManager soundManager, Texture2D projectileTex)
+        public void LoadLevel(int index, WorldManager world, EntityFactory factory, Texture2D enemyTex, SoundManager soundManager, Texture2D projectileTex, Hero hero)
         {
             if (!_levels.ContainsKey(index)) return;
 
@@ -210,8 +210,12 @@ namespace MonoFactory.Managers
                     }
 
                     var enemy = new Enemy(enemyTex, pos, strategy, world, soundManager, wave.Hp, wave.Damage, wave.CanShoot);
+                    enemy.SetTarget(hero);
 
-                    if (wave.CanShoot) enemy.SetProjectileTexture(projectileTex);
+                    if (wave.CanShoot)
+                    {
+                        enemy.SetProjectileTexture(projectileTex);
+                    }
 
 
                     world.AddEntity(enemy);
