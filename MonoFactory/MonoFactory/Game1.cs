@@ -127,6 +127,7 @@ namespace MonoFactory
             Texture2D stickTexture = Content.Load<Texture2D>("stick");
             Texture2D swordTexture = Content.Load<Texture2D>("swords");
             Texture2D ironBarTexture = Content.Load<Texture2D>("ore");
+            Texture2D heartTexture = Content.Load<Texture2D>("heart");
 
 
             // init world
@@ -139,6 +140,7 @@ namespace MonoFactory
             _entityFactory.RegisterTexture("Goblin_Patrol", enemyTexture);
             _entityFactory.RegisterTexture("Goblin_Turret", enemyTexture);
             _entityFactory.RegisterTexture("Furnace", _factorySheet);
+            _entityFactory.RegisterTexture("Heart", heartTexture);
 
             _entityFactory.RegisterCreator("Goblin_Chaser", (pos, tex) =>
                 new Enemy(tex, pos, new ChaseStrategy(), world, _soundManager, 9));
@@ -161,6 +163,8 @@ namespace MonoFactory
 
             _entityFactory.RegisterCreator("Crafter", (pos, tex) =>
                 new Machine(tex, pos, world, _factorySheet, "Crafter", swordTexture));
+
+            _entityFactory.RegisterCreator("Heart", (pos, tex) => new HeartPowerup(tex, pos));
 
 
             //portal

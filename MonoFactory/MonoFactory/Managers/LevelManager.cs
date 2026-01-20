@@ -108,6 +108,7 @@ namespace MonoFactory.Managers
                 Speed = 0f,
                 CanShoot = true
             });
+            lvl4.StaticEntities.Add(("Heart", GridHelper.GridToWorld(15, 10)));
             _levels.Add(4, lvl4);
 
             //LEVEL 4 END
@@ -185,7 +186,12 @@ namespace MonoFactory.Managers
 
             foreach (var entity in data.StaticEntities)
             {
-                world.AddEntity(factory.CreateEntity(entity.Type, entity.Pos));
+                var obj = factory.CreateEntity(entity.Type, entity.Pos);
+                if (obj is HeartPowerup heart)
+                {
+                    heart.SetHero(hero);
+                }
+                world.AddEntity(obj);
             }
 
             foreach (var wave in data.Waves)
