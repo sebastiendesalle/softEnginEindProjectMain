@@ -198,7 +198,7 @@ namespace MonoFactory.Managers
                     IMovementStrategy strategy;
                     if (wave.EnemyType == "Goblin_Patrol")
                     {
-                        strategy = new PatrolStrategy(pos, pos + new Vector2(200, 0));
+                        strategy = new PatrolStrategy(pos, pos + new Vector2(200, 0), wave.Speed);
                     }
                     else if (wave.EnemyType == "Goblin_Turret")
                     {

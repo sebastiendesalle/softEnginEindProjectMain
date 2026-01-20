@@ -424,7 +424,11 @@ namespace MonoFactory
                 {
                     LoadLevel(2);
                 }
-                else
+                else if (_currentLevelIndex >= 2 && _currentLevelIndex < 7)
+                {
+                    LoadLevel(_currentLevelIndex + 1);
+                }
+                else if (_currentLevelIndex == 7)
                 {
                     _currentState = GameState.Victory;
                 }

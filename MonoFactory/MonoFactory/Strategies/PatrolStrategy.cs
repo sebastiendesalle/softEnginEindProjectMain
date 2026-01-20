@@ -4,15 +4,16 @@ namespace MonoFactory.Strategies
 {
     public class PatrolStrategy : IMovementStrategy
     {
-        private float _speed = 60f;
+        private float _speed;
         private Vector2 _startPoint;
         private Vector2 _endPoint;
         private bool _movingToEnd = true;
 
-        public PatrolStrategy(Vector2 start, Vector2 end)
+        public PatrolStrategy(Vector2 start, Vector2 end, float speed = 60f)
         {
             _startPoint = start;
             _endPoint = end;
+            _speed = speed;
         }
         public Vector2 Move(GameTime gameTime, Vector2 currentPosition, Vector2 targetPosition)
         {

@@ -212,10 +212,7 @@ namespace MonoFactory.Managers
             {
                 if (entity is Enemy enemy && !enemy.IsDead)
                 {
-                    if (!enemy.IsDead)
-                    {
                         count++;
-                    }
                 }
             }
             return count;
