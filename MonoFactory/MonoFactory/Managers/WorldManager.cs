@@ -26,6 +26,8 @@ namespace MonoFactory.Managers
 
         private SoundManager _soundManager;
 
+        private bool _wereEnemiesAlive = false;
+
         public WorldManager(Texture2D grassTexture, SoundManager soundManager)
         {
             this.grassTexture = grassTexture;
@@ -149,7 +151,13 @@ namespace MonoFactory.Managers
         public void Update(GameTime gameTime)
         {
 
-            int enemiesBeforeUpdate = GetEnemyCount();
+            int enemiesStartCount = GetEnemyCount();
+
+            if (_wereEnemiesAlive && enemiesStartCount == 0)
+            {
+                Debug.WriteLine("All enemies defeated");
+                _onAllEnemiesDefeated?.Invoke();
+            }
 
             for (int i = _entities.Count - 1; i >= 0; i--)
             {
@@ -167,16 +175,12 @@ namespace MonoFactory.Managers
                 }
             }
 
-            int enemiesAfterUpdate = GetEnemyCount();
-            if (enemiesBeforeUpdate != enemiesAfterUpdate)
+            int enemiesEndCount = GetEnemyCount();
+            if (enemiesStartCount > 0 && enemiesEndCount == 0)
             {
-                Debug.WriteLine($"[WorldManager] Enemy count changed : {enemiesBeforeUpdate}");
-            }
-            if (enemiesBeforeUpdate > 0 && enemiesAfterUpdate == 0)
-            {
-                Debug.WriteLine($"[WorldManager] All enemies defeated");
                 _onAllEnemiesDefeated?.Invoke();
             }
+            _wereEnemiesAlive = enemiesEndCount > 0;
         }
 
         public void SetEnemyDefeatedCallback(Action callback)
