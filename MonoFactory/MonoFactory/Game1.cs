@@ -418,10 +418,16 @@ namespace MonoFactory
                     CheckGameOverCondition();
                     break;
                 case GameState.GameOver:
-                case GameState.Victory:
                     if (kState.IsKeyDown(Keys.Enter))
                     {
                         _currentState = GameState.Menu;
+                    }
+                    break;
+                case GameState.Victory:
+                    if (kState.IsKeyDown(Keys.Space))
+                    {
+                        LoadLevel(1);
+                        _currentState = GameState.Playing;
                     }
                     break;
             }
@@ -583,7 +589,12 @@ namespace MonoFactory
                 case GameState.GameOver:
                     GraphicsDevice.Clear(Color.Black);
                     DrawTextCentered("GAME OVER", 0, Color.Red);
-                    DrawTextCentered("Press ENTER to Main Menu", 50);
+                    DrawTextCentered("Press ENTER to try again", 50);
+                    break;
+                case GameState.Victory:
+                    DrawTextCentered("VICTORY!", -50, Color.Gold);
+                    DrawTextCentered("You have defeated the final boss, yourself.", 0);
+                    DrawTextCentered("Press SPACE to play again", 50);
                     break;
             }
             spriteBatch.End();
