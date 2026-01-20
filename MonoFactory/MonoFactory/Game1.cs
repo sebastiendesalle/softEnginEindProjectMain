@@ -75,6 +75,8 @@ namespace MonoFactory
         private SoundManager _soundManager;
         private LevelManager _levelManager;
 
+        private FogManager _fogManager;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -132,6 +134,9 @@ namespace MonoFactory
 
             // init world
             world = new WorldManager(tilesetTexture, _soundManager);
+
+            _fogManager = new FogManager(GraphicsDevice);
+            _fogManager.Radius = 1000f;
 
             // setup factory
             _entityFactory = new EntityFactory();
@@ -517,6 +522,8 @@ namespace MonoFactory
                     spriteBatch.Begin(transformMatrix: groundTransform, samplerState: SamplerState.PointClamp);
 
                     world.Draw(spriteBatch, camera, GraphicsDevice, _showDebugHitboxes ? _pixelTexture : null);
+
+                    _fogManager.Draw(spriteBatch, hero.Position);
 
                     if (_showDebugHitboxes)
                     {
