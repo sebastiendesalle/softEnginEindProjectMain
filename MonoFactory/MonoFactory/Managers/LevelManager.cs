@@ -86,7 +86,7 @@ namespace MonoFactory.Managers
                 Count = 8,
                 Hp = 5,
                 Damage = 1,
-                Speed = 130f
+                Speed = 150f
             });
             _levels.Add(3, lvl3);
 

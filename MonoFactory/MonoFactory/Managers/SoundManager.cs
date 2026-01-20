@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
 
@@ -42,9 +43,17 @@ namespace MonoFactory.Managers
                 return;
             }
 
-            MediaPlayer.Stop();
-            MediaPlayer.Play(_songs[name]);
-            _currentSongName = name;
+            MediaPlayer.Volume = 0.4f;
+
+            try
+            {
+                MediaPlayer.Play(_songs[name]);
+                _currentSongName = name;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Crash: {ex.Message}");
+            }
         }
 
         public void RegisterSoundEffect(string name, SoundEffect effect)
