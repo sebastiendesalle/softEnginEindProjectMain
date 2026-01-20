@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MonoFactory.Components.Animation
 {
-    class AnimationFrame
+    public class AnimationFrame
     {
         public Rectangle SourceRectangle { get; set; }
 

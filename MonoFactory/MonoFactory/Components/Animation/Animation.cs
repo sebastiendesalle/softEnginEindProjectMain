@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MonoFactory.Components.Animation
 {
-    class Animation
+    public class Animation
     {
         public AnimationFrame CurrentFrame { get; set; }
         private List<AnimationFrame> frames;

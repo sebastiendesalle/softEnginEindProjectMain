@@ -12,13 +12,13 @@ namespace MonoFactory.Entities
 {
     public class Enemy: IGameObject, IDamageable
     {
-        public Vector2 Position { get; private set; }
-        private Texture2D _texture;
+        public Vector2 Position { get; protected set; }
+        protected Texture2D _texture;
 
-        private WorldManager _world;
+        protected WorldManager _world;
 
-        private Dictionary<string, Animation> _animations;
-        private Animation _currentAnimation;
+        protected Dictionary<string, Animation> _animations;
+        protected Animation _currentAnimation;
 
         private float _shootCooldown = 0f;
         private const float ShootDelay = 2.0f;
@@ -29,13 +29,13 @@ namespace MonoFactory.Entities
         private int _hitBoxWidth;
         private int _hitBoxHeight;
 
-        private int _offsetX = 0;
-        private int _offsetY = 0;
+        protected int _offsetX = 0;
+        protected int _offsetY = 0;
 
-        private SpriteEffects _flipEffect = SpriteEffects.None;
+        protected SpriteEffects _flipEffect = SpriteEffects.None;
 
-        private IMovementStrategy _movementStrategy;
-        private Hero _targetHero;
+        protected IMovementStrategy _movementStrategy;
+        protected Hero _targetHero;
 
         private Color _tintColor = Color.White;
         private float _damageFlashTimer = 0f;
@@ -50,7 +50,7 @@ namespace MonoFactory.Entities
         private const float AttackRange = 100.0f;
         private int _damage;
 
-        private Random _random;
+        protected Random _random;
 
         private bool _isAttacking = false;
         private bool _isDead = false;
@@ -58,6 +58,8 @@ namespace MonoFactory.Entities
         public bool IsDead => _isDead;
 
         protected SoundManager _soundManager;
+
+        protected bool _useDefaultAttackLogic = true;
 
         public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy, WorldManager world, SoundManager soundManager, int health = 9, int damage = 1, bool canShoot = false)
         {
@@ -79,7 +81,7 @@ namespace MonoFactory.Entities
             _offsetY = -(int)(10 * Scale);
         }
 
-        public void LoadAnimations()
+        public virtual void LoadAnimations()
         {
             _animations = new Dictionary<string, Animation>();
 
@@ -240,9 +242,10 @@ namespace MonoFactory.Entities
             // update animation
             _currentAnimation.Update(gameTime);
 
-            if (_targetHero != null)
+            if (_useDefaultAttackLogic && _targetHero != null)
             {
                 float dist = Vector2.Distance(Position, _targetHero.Position);
+
                 if (dist < AttackRange && _damageCooldown <= 0)
                 {
                     _isAttacking = true;
@@ -255,65 +258,54 @@ namespace MonoFactory.Entities
                     {
                         _flipEffect = SpriteEffects.None;
                     }
-                    if (_random.Next(0, 2) == 0)
+
+                    if (_animations.ContainsKey("Attack1") && _random.Next(0,2) == 0)
                     {
                         _currentAnimation = _animations["Attack1"];
                     }
-                    else
+                    else if (_animations.ContainsKey("Attack2"))
                     {
                         _currentAnimation = _animations["Attack2"];
                     }
-
                     _currentAnimation.Reset();
-
                     _targetHero.TakeDamage(1);
                     _damageCooldown = DamageDelay;
                 }
-            }
 
-            if (_canShoot && _targetHero != null && _projectileTexture != null)
-            {
-                if (_shootCooldown > 0)
+                if (_canShoot && _projectileTexture != null)
                 {
-                    _shootCooldown -= deltaTime;
-                }
-
-                float dist = Vector2.Distance(Position, _targetHero.Position);
-                if (dist < ShootRange && _shootCooldown <= 0)
-                {
-                    if (_targetHero.Position.X < Position.X)
+                    if (_shootCooldown > 0)
                     {
-                        _flipEffect = SpriteEffects.FlipHorizontally;
+                        _shootCooldown -= deltaTime;
                     }
-                    else
+                    if (dist < ShootRange && _shootCooldown <= 0)
                     {
-                        _flipEffect = SpriteEffects.None;
+                        if (_targetHero.Position.X < Position.X)
+                        {
+                            _flipEffect = SpriteEffects.FlipHorizontally;
+                        }
+                        else
+                        {
+                            _flipEffect = SpriteEffects.None;
+                        }
+
+                        Vector2 projectStart = Position;
+                        Vector2 targetPosition = _targetHero.Position;
+
+                        Projectile Projectile = new Projectile(
+                            projectStart,
+                            targetPosition,
+                            1,
+                            this,
+                            _projectileTexture,
+                            Color.Red
+                            );
+
+                        _world.AddEntity(Projectile);
+                        _shootCooldown = ShootDelay;
+
+                        Debug.WriteLine($"Enemy turret fired projectile at {targetPosition}");
                     }
-
-                    Vector2 projectStart = Position;
-                    Vector2 targetPosition = _targetHero.Position;
-
-                    Projectile Projectile = new Projectile(
-                        projectStart,
-                        targetPosition,
-                        1,
-                        this,
-                        _projectileTexture,
-                        Color.Red
-                        );
-
-                    _world.AddEntity(Projectile);
-                    _shootCooldown = ShootDelay;
-
-                    Debug.WriteLine($"Enemy turret fired projectile at {targetPosition}");
-                }
-
-                if (dist < AttackRange && _damageCooldown <= 0)
-                {
-                    _isAttacking = true;
-
-                    _targetHero.TakeDamage(_damage);
-                    _damageCooldown = DamageDelay;
                 }
             }
         }
