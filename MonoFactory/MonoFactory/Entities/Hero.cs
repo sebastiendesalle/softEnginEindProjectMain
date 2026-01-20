@@ -44,6 +44,8 @@ namespace MonoFactory.Entities
 
         private SoundManager _soundManager;
 
+        private const int MaxHealth = 10;
+
         public Rectangle Rectangle => new Rectangle((int)(Position.X - _hitBoxWidth / 2), (int)(Position.Y - _hitBoxHeight), _hitBoxWidth, _hitBoxHeight);
 
         public Hero(Texture2D texture, IInputReader inputReader, Vector2 startPos, WorldManager world, SoundManager soundManager, float scale = 5f)
@@ -237,6 +239,20 @@ namespace MonoFactory.Entities
         public void SetHealth(int health)
         {
             Health = health;
+        }
+
+        public void Heal(int amount)
+        {
+            if (IsDead)
+            {
+                return;
+            }
+
+            Health += amount;
+            if (Health > MaxHealth)
+            {
+                Health = MaxHealth;
+            }
         }
     }
 }
