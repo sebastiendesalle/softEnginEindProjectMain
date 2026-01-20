@@ -111,6 +111,10 @@ namespace MonoFactory.Managers
                 {
                     continue;
                 }
+                if (entity is Portal)
+                {
+                    continue;
+                }
                 if (entity.Rectangle.Intersects(targetRect))
                 {
                     return true;
