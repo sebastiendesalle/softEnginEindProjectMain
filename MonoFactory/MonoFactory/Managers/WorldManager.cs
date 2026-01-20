@@ -88,6 +88,10 @@ namespace MonoFactory.Managers
                 {
                     continue;
                 }
+                if (entity is HeartPowerup)
+                {
+                    continue;
+                }
                 if (entity.Rectangle.Intersects(targetRect))
                 {
                     return true;
