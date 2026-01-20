@@ -308,7 +308,7 @@ namespace MonoFactory
         {
             if (!_portalSpawned && _currentLevelIndex > 1 && _currentLevelIndex < 7)
             {
-                Vector2 portalPos = GridHelper.GridToWorld(35, 10);
+                Vector2 portalPos = hero.Position + new Vector2(400, 0);
                 world.SpawnPortal(portalPos, _portalTexture);
                 _portalSpawned = true;
             }
