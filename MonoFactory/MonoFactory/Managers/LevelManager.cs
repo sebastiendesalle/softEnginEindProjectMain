@@ -136,7 +136,7 @@ namespace MonoFactory.Managers
 
             var lvl6 = new LevelData
             {
-                Index = 5,
+                Index = 6,
                 MusicTrack = "Battle",
                 IsSafeZone = false
             };
