@@ -10,13 +10,12 @@ using MonoFactory.Inputs;
 using MonoFactory.Items;
 using MonoFactory.Managers;
 using MonoFactory.Strategies;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using MonoFactory.UI;
 using System;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
+using System.Linq;
 
 namespace MonoFactory
 {
@@ -76,6 +75,8 @@ namespace MonoFactory
         private LevelManager _levelManager;
 
         private FogManager _fogManager;
+
+        private BossHealthBar _bossHealthBar;
 
         public Game1()
         {
@@ -138,6 +139,8 @@ namespace MonoFactory
             _fogManager = new FogManager(GraphicsDevice);
             _fogManager.Radius = 1000f;
 
+            _bossHealthBar = new BossHealthBar(GraphicsDevice);
+
             // setup factory
             _entityFactory = new EntityFactory();
             _entityFactory.RegisterTexture("Crafter", crafterTexture);
@@ -176,6 +179,12 @@ namespace MonoFactory
                 new Machine(tex, pos, world, _factorySheet, "Crafter", swordTexture));
 
             _entityFactory.RegisterCreator("Heart", (pos, tex) => new HeartPowerup(tex, pos));
+
+            _entityFactory.RegisterCreator("Boss_Self", (pos, tex) =>
+            {
+                var strategy = new BossStrategy(hero);
+                return new Boss(tex, pos, strategy, world, _soundManager, 50);
+            });
 
             // swords for testing
 
@@ -306,6 +315,16 @@ namespace MonoFactory
             if (levelIndex == 1)
             {
                 world.SpawnPortal(GridHelper.GridToWorld(35, 10), _portalTexture);
+            }
+            if (levelIndex == 7)
+            {
+                Vector2 bossPos = hero.Position + new Vector2(400, 0);
+
+                var bossStrategy = new BossStrategy(hero);
+                var boss = new Boss(_heroTexture, bossPos, bossStrategy, world, _soundManager, 100);
+
+                boss.SetTarget(hero);
+                world.AddEntity(boss);
             }
         }
 
@@ -536,6 +555,22 @@ namespace MonoFactory
                     {
                         Vector2 promptPos = nearby.Position - new Vector2(0, 50);
                         spriteBatch.Draw(_pixelTexture, new Rectangle((int)promptPos.X, (int)promptPos.Y, 20, 20), Color.Yellow);
+                    }
+                    spriteBatch.End();
+
+                    spriteBatch.Begin();
+
+                    if (_hud != null)
+                    {
+                        _hud.Draw(spriteBatch, hero);
+                    }
+                    if (_currentLevelIndex == 7)
+                    {
+                        var boss = world.GetEntities().OfType<Boss>().FirstOrDefault();
+                        if (boss != null)
+                        {
+                            _bossHealthBar.Draw(spriteBatch, boss);
+                        }
                     }
                     spriteBatch.End();
                     spriteBatch.Begin();

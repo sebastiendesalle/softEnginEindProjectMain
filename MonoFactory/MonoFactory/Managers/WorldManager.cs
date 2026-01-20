@@ -293,5 +293,10 @@ namespace MonoFactory.Managers
 
             spriteBatch.Draw(_groundTexture, destRect, null, Color.White);
         }
+
+        public IEnumerable<IGameObject> GetEntities()
+        {
+            return _entities;
+        }
     }
 }

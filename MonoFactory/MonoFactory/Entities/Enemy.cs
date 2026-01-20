@@ -42,7 +42,7 @@ namespace MonoFactory.Entities
 
         public int Health { get; private set; } = 9;
 
-        private const float Scale = 3.0f;
+        public float Scale { get; protected set; } = 3.0f;
 
         private float _damageCooldown = 0f;
         private const float DamageDelay = 1.0f;
@@ -57,7 +57,7 @@ namespace MonoFactory.Entities
         private bool _isVisible = true;
         public bool IsDead => _isDead;
 
-        private SoundManager _soundManager;
+        protected SoundManager _soundManager;
 
         public Enemy(Texture2D texture, Vector2 startPosition, IMovementStrategy strategy, WorldManager world, SoundManager soundManager, int health = 9, int damage = 1, bool canShoot = false)
         {
@@ -144,7 +144,7 @@ namespace MonoFactory.Entities
             }
         }
 
-        public void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
 
             if (!_isVisible)

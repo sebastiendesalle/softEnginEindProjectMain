@@ -168,6 +168,7 @@ namespace MonoFactory.Managers
                 Damage = 2,
                 Speed = 90f
             });
+            lvl6.StaticEntities.Add(("Heart", GridHelper.GridToWorld(15, 10)));
             _levels.Add(6, lvl6);
 
             //END LEVEL 6
