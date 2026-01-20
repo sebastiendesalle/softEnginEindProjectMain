@@ -241,45 +241,15 @@ namespace MonoFactory.Entities
 
             // update animation
             _currentAnimation.Update(gameTime);
-
-            if (_useDefaultAttackLogic && _targetHero != null)
+            if (_targetHero != null)
             {
                 float dist = Vector2.Distance(Position, _targetHero.Position);
-
-                if (dist < AttackRange && _damageCooldown <= 0)
+                if (_useDefaultAttackLogic && _targetHero != null)
                 {
-                    _isAttacking = true;
+                    if (dist < AttackRange && _damageCooldown <= 0)
+                    {
+                        _isAttacking = true;
 
-                    if (_targetHero.Position.X < Position.X)
-                    {
-                        _flipEffect = SpriteEffects.FlipHorizontally;
-                    }
-                    else
-                    {
-                        _flipEffect = SpriteEffects.None;
-                    }
-
-                    if (_animations.ContainsKey("Attack1") && _random.Next(0,2) == 0)
-                    {
-                        _currentAnimation = _animations["Attack1"];
-                    }
-                    else if (_animations.ContainsKey("Attack2"))
-                    {
-                        _currentAnimation = _animations["Attack2"];
-                    }
-                    _currentAnimation.Reset();
-                    _targetHero.TakeDamage(1);
-                    _damageCooldown = DamageDelay;
-                }
-
-                if (_canShoot && _projectileTexture != null)
-                {
-                    if (_shootCooldown > 0)
-                    {
-                        _shootCooldown -= deltaTime;
-                    }
-                    if (dist < ShootRange && _shootCooldown <= 0)
-                    {
                         if (_targetHero.Position.X < Position.X)
                         {
                             _flipEffect = SpriteEffects.FlipHorizontally;
@@ -289,25 +259,57 @@ namespace MonoFactory.Entities
                             _flipEffect = SpriteEffects.None;
                         }
 
-                        Vector2 projectStart = Position;
-                        Vector2 targetPosition = _targetHero.Position;
+                        if (_animations.ContainsKey("Attack1") && _random.Next(0, 2) == 0)
+                        {
+                            _currentAnimation = _animations["Attack1"];
+                        }
+                        else if (_animations.ContainsKey("Attack2"))
+                        {
+                            _currentAnimation = _animations["Attack2"];
+                        }
+                        _currentAnimation.Reset();
+                        _targetHero.TakeDamage(_damage);
+                        _damageCooldown = DamageDelay;
+                    }
 
-                        Projectile Projectile = new Projectile(
-                            projectStart,
-                            targetPosition,
-                            1,
-                            this,
-                            _projectileTexture,
-                            Color.Red
-                            );
+                    if (_canShoot && _projectileTexture != null)
+                    {
+                        if (_shootCooldown > 0)
+                        {
+                            _shootCooldown -= deltaTime;
+                        }
+                        if (dist < ShootRange && _shootCooldown <= 0)
+                        {
+                            if (_targetHero.Position.X < Position.X)
+                            {
+                                _flipEffect = SpriteEffects.FlipHorizontally;
+                            }
+                            else
+                            {
+                                _flipEffect = SpriteEffects.None;
+                            }
 
-                        _world.AddEntity(Projectile);
-                        _shootCooldown = ShootDelay;
+                            Vector2 projectStart = Position;
+                            Vector2 targetPosition = _targetHero.Position;
 
-                        Debug.WriteLine($"Enemy turret fired projectile at {targetPosition}");
+                            Projectile Projectile = new Projectile(
+                                projectStart,
+                                targetPosition,
+                                1,
+                                this,
+                                _projectileTexture,
+                                Color.Red
+                                );
+
+                            _world.AddEntity(Projectile);
+                            _shootCooldown = ShootDelay;
+
+                            Debug.WriteLine($"Enemy turret fired projectile at {targetPosition}");
+                        }
                     }
                 }
             }
+            
         }
 
         public void Draw(SpriteBatch spriteBatch)
