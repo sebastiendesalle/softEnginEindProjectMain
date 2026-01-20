@@ -204,7 +204,7 @@ namespace MonoFactory.Managers
             {
                 for (int i = 0; i < wave.Count; i++)
                 {
-                    Vector2 pos = GetRandomSpawnPos();
+                    Vector2 pos = GetRandomSpawnPos(hero.Position);
 
 
                     IMovementStrategy strategy;
@@ -241,11 +241,19 @@ namespace MonoFactory.Managers
             return null;
         }
 
-        private Vector2 GetRandomSpawnPos()
+        private Vector2 GetRandomSpawnPos(Vector2 center)
         {
-            int x = _random.Next(15, 40);
-            int y = _random.Next(5, 20);
-            return GridHelper.GridToWorld(x, y);
+
+            float minRadius = 500f;
+            float maxRadius = 1000f;
+            double angle = _random.NextDouble() * Math.PI * 2;
+
+            double distance = minRadius + (_random.NextDouble() * (maxRadius - minRadius));
+
+            float xOffset = (float)(Math.Cos(angle) * distance);
+            float yOffset = (float)(Math.Sin(angle) * distance);
+            
+            return center + new Vector2(xOffset, yOffset);
         }
     }
 }
