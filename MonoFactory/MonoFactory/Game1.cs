@@ -115,8 +115,8 @@ namespace MonoFactory
             _pixelTexture.SetData(new Color[] { Color.White });
 
 
-            // load grass
-            Texture2D grassTexture = Content.Load<Texture2D>("tile_grass");
+            // load tiles
+            Texture2D tilesetTexture = Content.Load<Texture2D>("background_tiles");
             //hero texture
             _heroTexture = Content.Load<Texture2D>("GoblinKingSpriteSheet");
             // load textures for world
@@ -131,7 +131,7 @@ namespace MonoFactory
 
 
             // init world
-            world = new WorldManager(grassTexture, _soundManager);
+            world = new WorldManager(tilesetTexture, _soundManager);
 
             // setup factory
             _entityFactory = new EntityFactory();
@@ -257,8 +257,8 @@ namespace MonoFactory
             int savedHealth = hero?.Health ?? 10;
 
             // reset the world for a new game
-            Texture2D grassTexture = Content.Load<Texture2D>("tile_grass");
-            world = new WorldManager(grassTexture, _soundManager);
+            Texture2D _tilesetTexture = Content.Load<Texture2D>("background_tiles");
+            world = new WorldManager(_tilesetTexture, _soundManager);
             camera = new Camera();
             _interactCommand = new InteractCommand(world);
 
@@ -281,6 +281,7 @@ namespace MonoFactory
 
             world.AddEntity(hero);
             world.SetEnemyDefeatedCallback(() => OnAllEnemiesDefeated());
+            world.SetGroundType(levelIndex);
             _portalSpawned = false;
 
             var levelData = _levelManager.GetLevelData(levelIndex);

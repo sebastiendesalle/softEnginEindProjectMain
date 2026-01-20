@@ -17,7 +17,8 @@ namespace MonoFactory.Managers
         private Dictionary<Point, Tile> grid = new Dictionary<Point, Tile>();
 
         // store grass texture
-        private Texture2D grassTexture;
+        private Texture2D _tileSetTexture;
+        private Rectangle _currentGroundSource;
 
         private List<IGameObject> _entities = new List<IGameObject>();
 
@@ -28,10 +29,28 @@ namespace MonoFactory.Managers
 
         private bool _wereEnemiesAlive = false;
 
-        public WorldManager(Texture2D grassTexture, SoundManager soundManager)
+        public WorldManager(Texture2D tileSet, SoundManager soundManager)
         {
-            this.grassTexture = grassTexture;
+            _tileSetTexture = tileSet;
             _soundManager = soundManager;
+
+            _currentGroundSource = new Rectangle(64, 0, 16, 16);
+        }
+
+        public void SetGroundType(int levelIndex)
+        {
+
+            int tileSpacing = 1;
+            int tileSize = 16;
+            int stride = tileSize + tileSpacing;
+            if (levelIndex == 1)
+            {
+                _currentGroundSource = new Rectangle(4 * stride, 0, tileSize, tileSize);
+            }
+            else
+            {
+                _currentGroundSource = new Rectangle(1 * stride, 0, tileSize, tileSize);
+            }
         }
 
         public void AddBuilding(Point coordinate, Tile tile)
@@ -250,7 +269,7 @@ namespace MonoFactory.Managers
                     Vector2 position = GridHelper.GridToWorld(x, y);
                     Point coordinate = new Point(x, y);
 
-                    DrawGrass(spriteBatch, position);
+                    DrawTiles(spriteBatch, position);
 
                     // check for machine, draw ontop of grid
                     if (grid.ContainsKey(coordinate))
@@ -278,17 +297,14 @@ namespace MonoFactory.Managers
             sb.Draw(pixel, new Rectangle(rect.Right, rect.Y, thickness, rect.Height), color);
         }
 
-        private void DrawGrass(SpriteBatch spriteBatch, Vector2 position)
+        private void DrawTiles(SpriteBatch spriteBatch, Vector2 position)
         {
             int size = GridHelper.TileSize;
 
             // destination
             Rectangle destRect = new Rectangle((int)position.X, (int)position.Y, size, size);
 
-            // source
-            Rectangle sourceRect = new Rectangle(0, 0, size, size);
-
-            spriteBatch.Draw(grassTexture, destRect, sourceRect, Color.White);
+            spriteBatch.Draw(_tileSetTexture, destRect, _currentGroundSource, Color.White);
         }
     }
 }
