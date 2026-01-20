@@ -142,6 +142,12 @@ namespace MonoFactory
             _entityFactory.RegisterTexture("Furnace", _factorySheet);
             _entityFactory.RegisterTexture("Heart", heartTexture);
 
+            // test swords
+            _entityFactory.RegisterTexture("Sword_Lvl1", swordTexture);
+            _entityFactory.RegisterTexture("Sword_Lvl2", swordTexture);
+            _entityFactory.RegisterTexture("Sword_Lvl3", swordTexture);
+            _entityFactory.RegisterTexture("Sword_Lvl4", swordTexture);
+
             _entityFactory.RegisterCreator("Goblin_Chaser", (pos, tex) =>
                 new Enemy(tex, pos, new ChaseStrategy(), world, _soundManager, 9));
 
@@ -165,6 +171,45 @@ namespace MonoFactory
                 new Machine(tex, pos, world, _factorySheet, "Crafter", swordTexture));
 
             _entityFactory.RegisterCreator("Heart", (pos, tex) => new HeartPowerup(tex, pos));
+
+            // swords for testing
+
+            int spriteSize = 128;
+            int rowY = 4 * 128;
+
+            float visualScale = 1f;
+
+            _entityFactory.RegisterCreator("Sword_Lvl1", (pos, tex) =>
+                new DroppedItem(
+                    new WeaponItem("Wooden Sword", 1, 2),
+                    pos,
+                    swordTexture,
+                    new Rectangle(0 * spriteSize, rowY, 128, 128),
+                    visualScale));
+
+            _entityFactory.RegisterCreator("Sword_Lvl2", (pos, tex) =>
+                new DroppedItem(
+                    new WeaponItem("Stone Sword", 2, 4),
+                    pos,
+                    swordTexture,
+                    new Rectangle(1 * spriteSize, rowY, 128, 128),
+                    visualScale));
+
+            _entityFactory.RegisterCreator("Sword_Lvl3", (pos, tex) =>
+                new DroppedItem(
+                    new WeaponItem("Iron Sword", 3, 6),
+                    pos,
+                    swordTexture,
+                    new Rectangle(2 * spriteSize, rowY, 128, 128),
+                    visualScale));
+
+            _entityFactory.RegisterCreator("Sword_Lvl4", (pos, tex) =>
+                new DroppedItem(
+                    new WeaponItem("Diamond Sword", 4, 10),
+                    pos,
+                    swordTexture,
+                    new Rectangle(3 * spriteSize, rowY, 128, 128),
+                    visualScale));
 
 
             //portal
@@ -201,40 +246,6 @@ namespace MonoFactory
             _soundManager.RegisterSong("Battle", battleSong);
             _soundManager.RegisterSoundEffect("Hit", hitSound);
             _soundManager.RegisterSoundEffect("Hurt", hurtSound);
-
-            // swords for testing
-
-            _entityFactory.RegisterCreator("Sword_Lvl1", (pos, tex) =>
-                new DroppedItem(
-                    new WeaponItem("Wooden Sword", 1, 2),
-                    pos,
-                    swordTexture,
-                    new Rectangle(0, 0, 32, 32),
-                    1.0f));
-
-            _entityFactory.RegisterCreator("Sword_Lvl2", (pos, tex) =>
-                new DroppedItem(
-                    new WeaponItem("Stone Sword", 2, 4),
-                    pos,
-                    swordTexture,
-                    new Rectangle(32, 0, 32, 32),
-                    1.0f));
-
-            _entityFactory.RegisterCreator("Sword_Lvl3", (pos, tex) =>
-                new DroppedItem(
-                    new WeaponItem("Iron Sword", 3, 6),
-                    pos,
-                    swordTexture,
-                    new Rectangle(64, 0, 32, 32),
-                    1.0f));
-
-            _entityFactory.RegisterCreator("Sword_Lvl4", (pos, tex) =>
-                new DroppedItem(
-                    new WeaponItem("Diamond Sword", 4, 10),
-                    pos,
-                    swordTexture,
-                    new Rectangle(96, 0, 32, 32),
-                    1.0f));
         }
 
         private void LoadLevel(int levelIndex)

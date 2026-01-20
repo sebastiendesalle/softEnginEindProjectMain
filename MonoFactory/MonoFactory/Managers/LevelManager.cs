@@ -34,6 +34,12 @@ namespace MonoFactory.Managers
 
             lvl1.StaticEntities.Add(("Furnace", GridHelper.GridToWorld(8,5)));
             lvl1.StaticEntities.Add(("Crafter", GridHelper.GridToWorld(12, 5)));
+
+            lvl1.StaticEntities.Add(("Sword_Lvl1", GridHelper.GridToWorld(0, 30)));
+            lvl1.StaticEntities.Add(("Sword_Lvl2", GridHelper.GridToWorld(5, 30)));
+            lvl1.StaticEntities.Add(("Sword_Lvl3", GridHelper.GridToWorld(10, 30)));
+            lvl1.StaticEntities.Add(("Sword_Lvl4", GridHelper.GridToWorld(15, 30)));
+
             _levels.Add(1, lvl1);
 
             // LEVEL 2 START
