@@ -118,7 +118,7 @@ namespace MonoFactory
 
 
             // load tiles
-            Texture2D tilesetTexture = Content.Load<Texture2D>("background_tiles");
+            Texture2D groundTexture = Content.Load<Texture2D>("tile");
             //hero texture
             _heroTexture = Content.Load<Texture2D>("GoblinKingSpriteSheet");
             // load textures for world
@@ -133,7 +133,7 @@ namespace MonoFactory
 
 
             // init world
-            world = new WorldManager(tilesetTexture, _soundManager);
+            world = new WorldManager(groundTexture, _soundManager);
 
             _fogManager = new FogManager(GraphicsDevice);
             _fogManager.Radius = 1000f;
@@ -262,7 +262,7 @@ namespace MonoFactory
             int savedHealth = hero?.Health ?? 10;
 
             // reset the world for a new game
-            Texture2D _tilesetTexture = Content.Load<Texture2D>("background_tiles");
+            Texture2D _tilesetTexture = Content.Load<Texture2D>("tile");
             world = new WorldManager(_tilesetTexture, _soundManager);
             camera = new Camera();
             _interactCommand = new InteractCommand(world);
@@ -286,7 +286,6 @@ namespace MonoFactory
 
             world.AddEntity(hero);
             world.SetEnemyDefeatedCallback(() => OnAllEnemiesDefeated());
-            world.SetGroundType(levelIndex);
             _portalSpawned = false;
 
             var levelData = _levelManager.GetLevelData(levelIndex);
@@ -500,7 +499,7 @@ namespace MonoFactory
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(new Color(0,0,0));
 
             spriteBatch.Begin();
 

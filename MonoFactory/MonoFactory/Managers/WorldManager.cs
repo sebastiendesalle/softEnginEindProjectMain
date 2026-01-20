@@ -17,8 +17,7 @@ namespace MonoFactory.Managers
         private Dictionary<Point, Tile> grid = new Dictionary<Point, Tile>();
 
         // store grass texture
-        private Texture2D _tileSetTexture;
-        private Rectangle _currentGroundSource;
+        private Texture2D _groundTexture;
 
         private List<IGameObject> _entities = new List<IGameObject>();
 
@@ -29,28 +28,10 @@ namespace MonoFactory.Managers
 
         private bool _wereEnemiesAlive = false;
 
-        public WorldManager(Texture2D tileSet, SoundManager soundManager)
+        public WorldManager(Texture2D texture, SoundManager soundManager)
         {
-            _tileSetTexture = tileSet;
+            _groundTexture = texture;
             _soundManager = soundManager;
-
-            _currentGroundSource = new Rectangle(64, 0, 16, 16);
-        }
-
-        public void SetGroundType(int levelIndex)
-        {
-
-            int tileSpacing = 1;
-            int tileSize = 16;
-            int stride = tileSize + tileSpacing;
-            if (levelIndex == 1)
-            {
-                _currentGroundSource = new Rectangle(4 * stride, 0, tileSize, tileSize);
-            }
-            else
-            {
-                _currentGroundSource = new Rectangle(1 * stride, 0, tileSize, tileSize);
-            }
         }
 
         public void AddBuilding(Point coordinate, Tile tile)
@@ -305,10 +286,12 @@ namespace MonoFactory.Managers
         {
             int size = GridHelper.TileSize;
 
-            // destination
-            Rectangle destRect = new Rectangle((int)position.X, (int)position.Y, size, size);
+            int borderSize = 1;
 
-            spriteBatch.Draw(_tileSetTexture, destRect, _currentGroundSource, Color.White);
+            // destination
+            Rectangle destRect = new Rectangle((int)position.X + borderSize, (int)position.Y + borderSize, size - (borderSize * 2), size - (borderSize * 2));
+
+            spriteBatch.Draw(_groundTexture, destRect, null, Color.White);
         }
     }
 }
