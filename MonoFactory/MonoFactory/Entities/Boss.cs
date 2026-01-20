@@ -12,6 +12,7 @@ namespace MonoFactory.Entities
     {
         public int MaxHp { get; private set; }
         private BossStrategy _bossStrategy;
+        private float _bossDamageCooldown = 0f;
 
         public Boss(Texture2D texture, Vector2 position, BossStrategy strategy, WorldManager world, SoundManager sound, int hp): base(texture, position, strategy, world, sound, hp)
         {
@@ -61,9 +62,11 @@ namespace MonoFactory.Entities
         {
             base.Update(gameTime);
 
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             if (_bossStrategy.ShouldShoot)
             {
-                ShootProjectile();
+                _soundManager.PlaySound("Hit");
                 _bossStrategy.ResetShootFlag();
 
                 _currentAnimation = _animations["Attack"];
@@ -76,17 +79,31 @@ namespace MonoFactory.Entities
                 {
                     _currentAnimation = _animations["Attack"];
                 }
-                else
-                {
+            }
 
+            if (_bossDamageCooldown > 0)
+            {
+                _bossDamageCooldown -= dt;
+            }
+
+            if (_targetHero != null)
+            {
+                float dist = Vector2.Distance(Position, _targetHero.Position);
+
+                if (dist < 80f && _bossDamageCooldown <= 0)
+                {
+                    int damageAmount = 1;
+
+                    if (_currentAnimation == _animations["Attack"])
+                    {
+                        damageAmount = 2;
+                    }
+
+                    _targetHero.TakeDamage(damageAmount);
+
+                    _bossDamageCooldown = 1.0f;
                 }
             }
         }
-
-        private void ShootProjectile()
-        {
-            _soundManager.PlaySound("Hit");
-        }
-
     }
 }
